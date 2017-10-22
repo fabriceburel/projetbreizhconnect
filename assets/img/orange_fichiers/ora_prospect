@@ -1,0 +1,24 @@
+var gtw_params = {
+  "page_data": {"notify_tag_error": "0.2", "page_id": "ora_prospect", "mode": "js", "visits": 1, "oan_version": "35a56ee23a4a5391506e1c02eca342da77a911de", "sKW": ""},
+  "user_data": {"optout": "0"},
+  "adservers": [
+  ]
+};
+
+function oan_displayAd() {};
+
+var useDocumentWrite = false;
+var urlMediation = "";
+if(urlMediation === ""){
+    useDocumentWrite = true;
+} else {
+    useDocumentWrite = false;
+}
+
+if(!useDocumentWrite) {
+    var js = document.createElement('script');
+    js.src = "http://cdn.adgtw.orangeads.fr/build/oan_common-3.2.min.js?35a56ee23a4a5391506e1c02eca342da77a911de";
+    document.getElementsByTagName("head")[0].appendChild(js);
+} else {
+    document.write(unescape("%3cscript%20type%3d%22text%2fjavascript%22%20src%3d%22http%3a%2f%2fcdn.adgtw.orangeads.fr%2fbuild%2foan_common-3.2.min.js%3f35a56ee23a4a5391506e1c02eca342da77a911de%22%3e%3c%2fscript%3e"));
+}
