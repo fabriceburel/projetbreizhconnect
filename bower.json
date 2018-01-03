@@ -1,0 +1,25 @@
+{
+  "name": "breizhConnect",
+  "homepage": "https://github.com/fabriceburel/projetbreizhconnect",
+  "authors": [
+    "Fabrice BUREL <burelfabrice35@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "font-awesome": "Font-Awesome#^4.7.0",
+    "jquery": "^3.2.1",
+    "jquery.min": "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js",
+    "bootstrap": "^3.3.7",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.47",
+    "bootstrap-datepicker": "^1.7.1"
+  }
+}

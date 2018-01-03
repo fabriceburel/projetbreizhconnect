@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="assets/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/lib/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <meta name="viewport" content="width=device-width" />
+    <title>Projet</title>
+  </head>
+  <body>
+<div class="container-fluid">
+  <div class="row">
+    <form method="post">
+      <div class="col-lg-6 row" id="connexion">
+        <h2 class="col-lg-12 text-center">connexion</h2>
+        <!-- Création du formulaire de connexion-->
+         <div class="row text-center">
+           <label for="ident">Identifiant : </label><input type="text" name="identification" id="ident"/>  <!-- saisi de l'identifiant  -->
+         </div>
+         <div class="row text-center">
+           <label for="password">Confirmez : </label><input type="password" name="password"  id="password"/>  <!-- saisi du mot de passe  -->
+         </div>
+         <div class="row text-center">
+          <button type="button" name="button" onclick="connectOn();">Se connecter au site</button>
+        </div>
+       </div>
+     </form>
+   <div class="col-lg-6 row">
+      <form method="post" action="inscription.php"  enctype="multipart/form-data">
+        <h2 class="col-lg-12 text-center">Inscription</h2>
+        <p class="col-lg-12">Si c'est ta première visite, inscris-toi facilement en remplissant tes données ci-dessous</p>
+    <!--  Création du formulaire d'inscription-->
+        <div class="row text-center">
+          <label for="name">Nom : </label><input type="text" name="name" placeholder="Entrez votre nom" id="lastName">  <!-- Création de l'emplacement du nom  -->
+        </div>
+        <div class="row text-center">
+          <label for="surname">Prénom : </label><input type="text" name="surname" placeholder="Entrez votre prénom" id="firstName"> <!-- Création de l'emplacement du prénom  -->
+         </div>
+         <div class="form-group row">
+            <div class="col-xs-3">
+              <label class="control-label">Date de naissance</label>
+              <div class="input-group date" id="dp3">
+                <input class="form-control" type="text" placeholder="01-01-2000">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+              </div>
+            </div>
+         </div>
+         <div class="row text-center">
+           <label for="mail">Email : </label><input type="text" name="mail" placeholder="Entrez votre adresse e-mail" id="mail"><!-- Création de l'emplacement du mail  -->
+         </div>
+         <div class="row text-center">
+           <label for="password">Mot de passe : </label><input type="password" name="password" placeholder="Entrez votre mot de passe" id="firstPassword"> <!-- Création de l'emplacement du mdp  -->
+         </div>
+         <div class="row text-center">
+           <label for="checked">Vérification du mot de passe : </label><input type="password" name="checked" placeholder="Entrez votre mot de passe" id="checkPassword"> <!-- Création de l'emplacement de la vérification  -->
+         </div>
+         <div class="row text-center">
+           <!-- Possibilité d'ajouter une photo de profil -->
+           <label for="pictures">Ajouter une photo : (facultatif)</label><input type="file" name="avatar" value="Parcourir" id="picture">
+         </div>
+         <!-- Ajout du bouton pour envoyer la requête -->
+         <div class="row text-center">
+        <button type="button" name="button" onclick="inscribe();">S'inscrire au site!</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div id="footer" class="container-fluid">
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-5 col-xs-offset-1 col-xs-5 col-lg-offset-0 col-lg-6"><p><span class="hidden-sm hidden-xs couleurblanche">Contact</span><a href="mailto:burelfabrice35@gmail.com"><i class="fa fa-envelope" aria-hidden="true"></i></a></p></div>
+    </div>
+  </div>
+</footer>
+<script src="assets/lib/jquery.min/index.js"></script>
+<script src="assets/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="assets/lib/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+<script src="assets/lib/bootstrap-datepicker/js/locales/bootstrap-datepicker.fr.js"></script>
+
+<script>
+$(function () {
+  $("#dp3").datepicker({
+    clearBtn: true,
+    language: "fr",
+    orientation: "bottom right",
+    autoclose: true,
+    todayHighlight: true,
+    datesDisabled: ['11/06/2017', '11/21/2017'],
+    toggleActive: true,
+    defaultViewDate: { year: 1977, month: 04, day: 25 }
+  });
+
+});
+</script>
+</footer>
+
+</body>
+</html>

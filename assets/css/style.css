@@ -1,11 +1,10 @@
-#entete{
-  background-color: #81020B;
+#heading{
   background-image: url("../img/hermine.jpg");
   background-repeat:round;
   background-size: 300px;
 
 }
-#entete h1{
+#heading h1{
   color: white;
   text-align: center;
   background: black;
@@ -18,24 +17,45 @@
 .connexion{
   color:white;
   background-color: black;
+  border: none;
 }
-/*inversion des couleur lors du survol de la zone de clique */
 a.connexion:hover{
-  background-color: white;
-  color:black;
+  opacity: 0.8;
+  background-color: black;
 }
+a.connexion:active{
+  opacity: 0.8;
+  background-color: black;
+}
+.btn-connexion { 
+  color: #FFFFFF; 
+  background-color: #000000;
+} 
+.btn-connexion:hover, 
+.btn-connexion:focus, 
+.btn-connexion:active, 
+.btn-connexion.active, 
+.open .dropdown-toggle.btn-connexion { 
+  color: #FFFFFF; 
+} 
 .inscription{
   color:black;
   background-color: white;
   font-weight: bold;
+  border: none;
 }
-/*inversion des couleur lors du survol de la zone de clique */
-a.inscription:hover{
-  background-color: black;
-  color:white;
+
+a.inscription:hover, .btn-header:active, .btn-header:focus{
+  opacity: 0.9;
+  background-color: white;
+  color:black;
+}
+.btn-inscription .badge { 
+  color: #FFFFFF; 
+  background-color: #000000; 
 }
 /*suppression des margin et padding pour la zone inscription et connexion */
-.test{
+.button-header{
   padding: 0;
   margin: 0;
 }
@@ -52,6 +72,9 @@ nav.navbar.navbar-inverse{
 .navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:focus, .navbar-inverse .navbar-nav > .active > a:hover {
     color: white;
     background: linear-gradient(black, #E0DFE7);
+}
+a.page{
+  height: 100%; 
 }
 
 li.active{
@@ -77,8 +100,8 @@ div.navbar-header{
   background: linear-gradient(black, #E0DFE7);
 }
 .navbar{
-  border-top-right-radius: 0px;
-  border-top-left-radius: 0px;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
   z-index: 1000;
 }
 #chapitre{
@@ -88,7 +111,6 @@ div.navbar-header{
   margin:0;
   padding: 0;
   background: linear-gradient(black, #E0DFE7);
-    /*Ajout de coins arrondis et d’ombres*/
 }
 div#nav.container{
   height: 30px;
@@ -185,12 +207,6 @@ body{
 .fa-linkedin{
   color:blue;
 }
-.couleurblanche,{
-  color: white;
-}
-p .couleurblanche{
-  color: white;
-}
 @media all and (max-device-width: 766px)
 {
   .col-sm{
@@ -235,9 +251,6 @@ p .couleurblanche{
     #entete{
       display: flex;
       flex-direction: column;
-      background: url("../img/saintmalo.jpg") no-repeat center;
-      background-size:120%;
-      width: 100%;
       padding: 0;
     }
      #image{
