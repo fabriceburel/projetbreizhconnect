@@ -11,7 +11,7 @@ class region extends dataBase {
     }
     public function getListRegion()
     {
-        $query = 'SELECT `id`, `region` FROM `region`';
+        $query = 'SELECT `id`, `region` FROM `' . self::PREFIX .  'region`';
         $listRegion = $this->db->query($query);
         $regions = $listRegion->fetchAll(PDO::FETCH_OBJ);
         return $regions;

@@ -1,4 +1,4 @@
-<?php include_once 'controllers/buttonConnectOffController.php'; ?>
+<?php include_once 'controllers/buttonLogOffController.php'; ?>
 <div  class="row" id="heading">
     <!--En tete du site -->
     <div class="col offset-l3  l5"><h1>BZHConnect</h1></div>

@@ -1,6 +1,7 @@
 <?php
 include_once 'models/dataBase.php';
 include_once 'models/user.php';
+include_once 'models/relationship.php';
 include_once 'models/country.php';
 include_once 'models/region.php';
 include 'controllers/headerController.php';
@@ -17,38 +18,38 @@ include 'header.php';
             <!-- Création de l'emplacement Pseudo -->
             <div class="input-field l4">
                 <i class="material-icons prefix">account_circle</i>
-                <input type="text" name="username" class="grey darken-4 white-text" id="username" value="<?= $users->username; ?>">
-                <label for="username">Choisissez un pseudo : <!-- <p class="textError"><?= $textUsername; ?></p> --> </label>
+                <input type="text" name="username" class="grey darken-4 white-text" id="username" value="<?= $FriendUsers->username; ?>">
+                <label for="username">Pseudo de la personne (optionnel) : </label>
             </div>            
             <!-- création de la liste deroulante permettant de choisir son pays -->
             <div class="row">
                 <div class="col s12">
                     <div class="input-field">
                         <i class="fa fa-globe prefix" aria-hidden="true"></i>
-                        <select name="country"  class="grey darken-4 white-text" required>
-                            <option>Sélectionner votre pays</option>
+                        <select name="country"  class="grey darken-4 white-text country" required>
+                            <option>Sélectionner le pays</option>
                             <?php
                             foreach ($countryList as $country)
                             {
                                 ?>
-                                <option value="<?= $country->id ?>"><?= $country->country ?></option>
+                                <option value="<?= $country->id ?>" <?= $FriendUsers->country == $country->id ? 'selected' : ''; ?>><?= $country->country ?></option>
                                 <?php
                             }
                             ?> 
                         </select>
-                        <label class="localisation" for="country">Séléctionnez votre pays : <p class="textError"><?= $textCountry; ?></p></label>
+                        <label class="localisation" for="country">Pays : <p class="textError"><?= $textCountry; ?></p></label>
                     </div>
                 </div>
             </div>
             <div class="input-field region">
                 <i class="fa fa-globe prefix" aria-hidden="true"></i>
                 <select name="region" class="grey darken-4 white-text">
-                    <option>Sélectionnez votre région</option>
+                    <option>Sélectionnez la région</option>
                     <?php
                     foreach ($regionList as $region)
                     {
                         ?>
-                        <option value="<?= $region->id ?>"><?= $region->region ?></option>
+                        <option value="<?= $region->id ?>" <?= $FriendUsers->region == $region->id ? 'selected' : ''; ?>><?= $region->region ?></option>
                         <?php
                     }
                     ?> 
@@ -62,33 +63,96 @@ include 'header.php';
         </form>
     </div>
 </div>
-<table>
-    <thead>
-        <tr>
-            <th>NOM</th>
-            <th>PRENOM</th>
-            <th>PAYS</th>
-            <th>REGION</th>
-            <th>PROFIL</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        foreach ($userList AS $user)
-        {
-            ?>
-            <tr>
-                <td><?= $user->lastname ?></td>
-                <td><?= $user->firstname ?></td>
-                <td><?= $user->country ?></td>
-                <td><?= $user->region ?></td>
-                <td><a class="btn" href="profilFriend.php?idFriend=<?= $user->id ?>">VOIR SON PROFIL</a></td>
-            </tr>
-            <?php
-        }
-        ?>
-    </tbody>
-</table>
 <?php
+if (isset($_POST['searchFriend']))
+{
+    if (!empty($userList))
+    {
+        ?>
+        <div class="row">
+            <table class="striped col s4 M4 l4 friend centered">
+                <thead>
+                    <tr>
+                        <th>pseudo</th>
+                        <th>PAYS</th>
+                        <th>REGION</th>
+                        <th>PROFIL</th>
+                        <?php
+                        if ($relationship->idTransmitter != 0)
+                        {
+                            ?>
+                            <th>Ajouter en ami</th>
+                        <?php } ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach ($userList AS $user)
+                    {
+                        //on vérifie en premier que l'utilisateur récupéré n'est pas l'utisateur connecté
+                        if (!($user->id == $relationship->idTransmitter))
+                        {
+                            ?>
+                            <tr>
+                                <td><?= $user->username ?></td>
+                                <td><?= $user->country ?></td>
+                                <td><?= $user->region ?></td>
+                                <td><a class="btn" href="profilFriend.php?idFriend=<?= $user->id ?>">PROFIL</a></td>
+                                <?php
+                                /*
+                                 * On vérifie si l'utilisateur existe dans l'un des tableaux récupérer dans le controller
+                                 * Pour personnaliser le bouton en fonction des relations récupérer dans l'attribut id de l'objet user avec l'utilisateur connecté
+                                 */
+                                if ($relationship->idTransmitter != 0)
+                                {
+                                    if (in_array($user->id, $listFriendAskSend))
+                                    {
+                                        ?>
+                                        <td class="center"><input type="input" value="En Attente" class="btn grey col l9"></td>
+                                        <?php
+                                    }
+                                    else if (in_array($user->id, $listFriend))
+                                    {
+                                        ?>
+                                        <td class="center"><input type="input" value="AMI" class="btn green col l9"></td>
+                                        <?php
+                                    }
+                                    else if (is_array($listBlockFriend) && in_array($user->id, $listBlockFriend))
+                                    {
+                                        ?>
+                                        <td><form method="POST" action="#" class="col l1 releaseFriend"><input hidden value=<?= $user->id ?> name="friend"><input type="submit" name="releaseFriend" value="DEBLOQUER" class="btn red accent-4"></form></td>
+                                        <?php
+                                    }
+                                    else if (is_array($listFriendBlock) && in_array($user->id, $listFriendBlock))
+                                    {
+                                        ?>
+                                        <td></td>
+                                        <?php
+                                    }
+                                    else
+                                    {
+                                        ?>
+                                        <td><form method="POST" action="#" class="col l1 addFriend"><input hidden value=<?= $user->id ?> name="friend"><input type="submit" name="addFriend" value="Ajouter" class="btn"></form></td>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
+                            </tr>
+                            <?php
+                        }
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+        <?php
+    }
+    else
+    {
+        ?>
+        <p>Aucun utilisateur trouvé</p>
+        <?php
+    }
+}
 include 'footer.php';
 ?>

@@ -1,131 +1,183 @@
-<!DOCTYPE html>
-<html>  <!-- xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr-FR" lang="fr-FR" -->
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Test caméra " />
-		<meta name="keywords" content="HTML5,webcam,cybercaméra,caméra,getUserMedia,device,multimédia,vidéo,MediaStream" />
-		<meta name="viewport" content="initial-scale=6.0,width=device-width" />
-		<title>Accès caméra en HTML5</title>
-		<style type="text/css">
-			input { font-size:x-large; }
-		</style>
-	</head>
+<html>
+    <head>
+        <title>Media WebRTC Demo</title>        
+        <style>#video,#otherPeer { width: 300px;}</style>
+        <script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+    </head>
+    <body>
+        <video id="video" autoplay></video>
+        <video id="otherPeer" autoplay></video>
+        <script>
+            // get a reference to our FireBase database. You should create your own
+            // and replace the URL.
+            var dbRef = new Firebase("https://webrtcdemo.firebaseIO.com/");
+            var roomRef = dbRef.child("rooms");
 
-	<body>
-		<hr class="n2"/>
+            // shims!
+            var PeerConnection = window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+            var SessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
+            var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
+            navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
 
-		<h2 id="demo">Démonstration</h2>
-		<p><video id="video" autoplay="autoplay" controls></video></p> <!--permet de diffuser la vidéo saisi par la webcam -->
-		<p><video id="test" ontimeupdate="update(this)"></p>
-		<p><input type="button" id="buttonSnap" value="Prendre une photo" disabled="disabled" onclick="snapshot()" /></p> <!--bouton prise de photo -->
-		<p>
-			<input type="button" id="buttonStart" value="Démarrer" disabled="disabled" onclick="start()" /> <!--démarre la webcam après que celle ci ai été arrété -->
-			<input type="button" id="buttonStop" value="Arrêter" disabled="disabled" onclick="stop()" /> <!--démarre la webcam après que celle ci ai été démarré -->
-		</p>
-		<p><canvas id="webcamdisplay" controls></canvas></p> <!--affichage de la video saisi par la webcam en temps réel avec la fonction -->
+            // Generation d'un numéro alétoire qui permettra d'identifier la connexion pour les 2 utilisateurs, Celui ci sera généré lors de la demande
+            function idPeerConnexion() {
+                return (Math.random() * 10000 + 10000 | 0).toString();
+            }
 
-		<hr />
+            // a nice wrapper to send data to FireBase
+            function send(room, key, data) {
+                roomRef.child(room).child(key).set(data);
+            }
+            // wrapper function to receive data from FireBase
+            function recv(room, type, cb) {
+                roomRef.child(room).child(type).on("value", function (snapshot, key) {
+                    var data = snapshot.val();
+                    if (data) {
+                        cb(data);
+                    }
+                });
+            }
+            // generic error handler
+            function errorHandler(err) {
+                console.error(err);
+            }
+            // determine what type of peer we are,
+            // offerer or answerer.
+            var ROOM = location.hash.substr(1);
+            var type = "answerer";
+            var otherType = "offerer";
+            // no room number specified, so create one
+            // which makes us the offerer
+            if (!ROOM) {
+                ROOM = id();
+                type = "offerer";
+                otherType = "answerer";
+                //Création du lien à envoyer vers une autre personne
+                document.write("<a href='#" + ROOM + "'>Send link to other peer</a>");
+            }
+            // Génération du numéro aléatoire qui identifiera la connexion
+            var user1 = idPeerConnexion();
+            /* 
+             * Liste des serveur STUN et TURN pouvant être utiliser pour récupérer les adresses IP privé et le port utiliser par l'équipement de l'utilisateur, quand celui ci est situé derrière un pare-feu
+             * Et qu'il y a une translation d'adresse NAT
+             */            
+            var server = {
+                iceServers: [
+                    {url: 'stun:stun01.sipphone.com'},
+                    {url: 'stun:stun.ekiga.net'},
+                    {url: 'stun:stun.fwdnet.net'},
+                    {url: 'stun:stun.ideasip.com'},
+                    {url: 'stun:stun.iptel.org'},
+                    {url: 'stun:stun.rixtelecom.se'},
+                    {url: 'stun:stun.schlund.de'},
+                    {url: 'stun:stun.l.google.com:19302'},
+                    {url: 'stun:stun1.l.google.com:19302'},
+                    {url: 'stun:stun2.l.google.com:19302'},
+                    {url: 'stun:stun3.l.google.com:19302'},
+                    {url: 'stun:stun4.l.google.com:19302'},
+                    {url: 'stun:stunserver.org'},
+                    {url: 'stun:stun.softjoys.com'},
+                    {url: 'stun:stun.voiparound.com'},
+                    {url: 'stun:stun.voipbuster.com'},
+                    {url: 'stun:stun.voipstunt.com'},
+                    {url: 'stun:stun.voxgratia.org'},
+                    {url: 'stun:stun.xten.com'},
+                    {
+                        url: 'turn:numb.viagenie.ca',
+                        credential: 'muazkh',
+                        username: 'webrtc@live.com'
+                    },
+                    {
+                        url: 'turn:192.158.29.39:3478?transport=udp',
+                        credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+                        username: '28224511:1379330808'
+                    },
+                    {
+                        url: 'turn:192.158.29.39:3478?transport=tcp',
+                        credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+                        username: '28224511:1379330808'
+                    }
+                ]
+            };
+            var options = {
+                optional: [
+                    {DtlsSrtpKeyAgreement: true}
+                ]
+            }
+            // Création de la connexion Point à point
+            var pc = new PeerConnection(server, options);
+            pc.onicecandidate = function (e) {
+                // take the first candidate that isn't null
+                if (!e.candidate) {
+                    return;
+                }
+                pc.onicecandidate = null;
+                // request the other peers ICE candidate
+                recv(ROOM, "candidate:" + otherType, function (candidate) {
+                    pc.addIceCandidate(new IceCandidate(JSON.parse(candidate)));
+                });
+                // send our ICE candidate
+                send(ROOM, "candidate:" + type, JSON.stringify(e.candidate));
+            };
+            // grab the video elements from the document
+            var video = document.getElementById("video");
+            var video2 = document.getElementById("otherPeer");
+            // get the user's media, in this case just video
+            navigator.getUserMedia({video: true}, function (stream) {
+                // set one of the video src to the stream
+                video.src = URL.createObjectURL(stream);
+                // add the stream to the PeerConnection
+                pc.addStream(stream);
+                // now we can connect to the other peer
+                connect();
+            }, errorHandler);
+            // when we get the other peer's stream, add it to the second
+            // video element.
+            pc.onaddstream = function (e) {
+                video2.src = URL.createObjectURL(e.stream);
+            };
+            // constraints on the offer SDP. Easier to set these
+            // to true unless you don't want to receive either audio
+            // or video.
+            var constraints = {
+                mandatory: {
+                    OfferToReceiveAudio: true,
+                    OfferToReceiveVideo: true
+                }
+            };
+            // Debut de la connexion
+            function connect() {
+                if (type === "offerer") {
+                    // Création du SDP, protocole de communication de description de paramètres d'initialisation d'une session de diffusion en flux
+                    pc.createOffer(function (offer) {
+                        pc.setLocalDescription(offer);
 
-		<script type="text/javascript">//<![CDATA[
-			"use strict";
-			var video = document.getElementById('video');
-			var canvas = document.getElementById('webcamdisplay');
-			var videoStream = null;
-			var preLog = document.getElementById('preLog');
-			//défini l'affichage des message
-			function log(text)
-			{
-				if (preLog) preLog.textContent += ('\n' + text);
-				else alert(text);
-			}
-			// capture dela video
-			function snapshot()
-			{
-				canvas.width = video.videoWidth; //defini la largeur du canvas identique a celui de la video
-				canvas.height = video.videoHeight; //defini la hauteur du canvas identique a celui de la video
-				canvas.getContext('2d').drawImage(video, 0, 0);
-			}
+                        // Envoi du SDP à FireBase
+                        send(ROOM, "offer", JSON.stringify(offer));
+                        // Attente de la réponse SDP de FireBase
+                        recv(ROOM, "answer", function (answer) {
+                            pc.setRemoteDescription(
+                                    new SessionDescription(JSON.parse(answer))
+                                    );
+                        });
+                    }, errorHandler, constraints);
 
-			// affichage du message d erreur lorsque l utilisateur à refusé l accès à la webcam
-			function noStream()
-			{
-				log('L’accès à la caméra a été refusé !');
-			}
-			// coupure de la webcam lors du clique sur arreter la webcam
-			function stop()
-			{
-				var myButton = document.getElementById('buttonStop');
-				if (myButton) myButton.disabled = true;
-				// activation du boutton prise de photo losque la video est activé
-				myButton = document.getElementById('buttonSnap');
-				if (myButton) myButton.disabled = true;
-				if (videoStream)
-				{
-					if (videoStream.stop) videoStream.stop();
-					else if (videoStream.msStop) videoStream.msStop();
-					videoStream.onended = null;
-					videoStream = null;
-				}
-				if (video)
-				{
-					video.onerror = null;
-					video.pause();
-					if (video.mozSrcObject)
-					video.mozSrcObject = null;
-					video.src = "";
-				}
-				myButton = document.getElementById('buttonStart');
-				if (myButton) myButton.disabled = false;
-			}
-
-			function gotStream(stream)
-			{
-				var myButton = document.getElementById('buttonStart');
-				if (myButton) myButton.disabled = true;
-				videoStream = stream;
-				// log('Flux vidéo reçu.'); <!--permet d indiquer si la fonction d affichage de la video a fonctionné -->
-				video.onerror = function ()
-				{
-					log('video.onerror');
-					if (video) stop();
-				};
-				stream.onended = noStream;
-				if (window.webkitURL) video.src = window.webkitURL.createObjectURL(stream);
-				else if (video.mozSrcObject !== undefined)
-				{//FF18a
-					video.mozSrcObject = stream;
-					video.play();
-				}
-				else if (navigator.mozGetUserMedia)
-				{//FF16a, 17a
-					video.src = stream;
-					video.play();
-				}
-				else if (window.URL) video.src = window.URL.createObjectURL(stream);
-				else video.src = stream;
-				myButton = document.getElementById('buttonSnap');
-				if (myButton) myButton.disabled = false;
-				myButton = document.getElementById('buttonStop');
-				if (myButton) myButton.disabled = false;
-			}
-			function start()
-			{
-				// vérification de la compatibilité des navigateurs
-				if ((typeof window === 'undefined') || (typeof navigator === 'undefined')) log('Cette page requiert un navigateur Web avec les objets window.* et navigator.* !');
-				// vérifie que les fonction video et canvas ne contienne pas d'erreur
-				else if (!(video && canvas )) log('Erreur de contexte HTML !');
-				else
-				{
-					log('Demande d’accès au flux vidéo…');
-					if (navigator.getUserMedia) navigator.getUserMedia({video:true,audio:true}, gotStream, noStream);
-					else if (navigator.oGetUserMedia) navigator.oGetUserMedia({video:true,audio:true}, gotStream, noStream);
-					else if (navigator.mozGetUserMedia) navigator.mozGetUserMedia({video:true,audio:true}, gotStream, noStream);
-					else if (navigator.webkitGetUserMedia) navigator.webkitGetUserMedia({video:true,audio:true}, gotStream, noStream);
-					else if (navigator.msGetUserMedia) navigator.msGetUserMedia({video:true, audio:true}, gotStream, noStream);
-					else log('getUserMedia() n’est pas disponible depuis votre navigateur !');
-				}
-			}
-			start();
-    </script>
-  </body>
+                } else {
+                    // answerer needs to wait for an offer before
+                    // génération de la réponse SDP
+                    recv(ROOM, "offer", function (offer) {
+                        pc.setRemoteDescription(
+                                new SessionDescription(JSON.parse(offer))
+                                );
+                        // now we can generate our answer SDP
+                        pc.createAnswer(function (answer) {
+                            pc.setLocalDescription(answer);
+                            // Envoie des informations à FireBase
+                            send(ROOM, "answer", JSON.stringify(answer));
+                        }, errorHandler, constraints);
+                    });
+                }
+            }
+        </script>
+    </body>
 </html>

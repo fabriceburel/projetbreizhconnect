@@ -22,8 +22,8 @@ body{
     color: white;
     text-align: center;
     background: black;
-    margin-right: 15%;
-    margin-left: 15%;
+    margin-right: 13%;
+    margin-left: 13%;
     padding: 2%;
     font-weight: bold;
 }
@@ -31,7 +31,7 @@ header{
     font-family: 'Celtic Garamond the 2nd';
 }
 #button-header{
-    margin-top: -25px;
+    margin-top: -30px;
     margin-bottom: 0;
     padding-right: 0;
 }
@@ -40,7 +40,7 @@ header{
     color: white;
     background-color: black;
     border: none;
-    height: 90px;;
+    height: 6em;;
     padding-top: 25px;
 }
 
@@ -54,8 +54,25 @@ header{
     background-color: white;
     font-weight: bold;
     border: none;
-    height: 90px;;
+    height: 6em;;
     padding-top: 25px;
+}
+form.btn.logOut{
+    color:black;
+    background-color: white;
+    font-weight: bold;
+    border: none;
+    height: 6em;;
+    padding: 0;
+}
+div.logOut{
+    padding:0;
+    font-size:1em;
+}
+div.logOut input{
+
+    height: 6em;
+    width: 100%;
 }
 .modal-content{
     font-family: arial;
@@ -67,7 +84,7 @@ header{
     font-family: arial;
     font-weight: bold;
 }
-.btn.inscription:hover, .btn-header:focus{
+.btn.inscription:hover, .btn-header:focus, form.logOut:hover{
     opacity: 0.9;
     background-color: white;
     color:black;
@@ -236,8 +253,25 @@ p.textError{
     color: red;
     margin-top: -0.7em;
 }
-
-@media all and (max-device-width: 600px){
+/* button ajout d'ami */
+form.col.addFriend{
+    padding: 0;
+}
+.friend td,.friend th{
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+table{
+    margin-bottom: 6em;
+}
+@media all and (max-device-width: 634px){
+#heading h1{
+    margin-right: 10%;
+    margin-left: 10%;
+    padding: 5%;
+    font-weight: bold;
+    font-size: 2.2em;
+}
     h2{
         font-size : 2em;
     }

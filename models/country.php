@@ -11,7 +11,7 @@ class country extends dataBase {
     }
     public function getListCountry()
     {
-        $query = 'SELECT `id`, `country` FROM `country`';
+        $query = 'SELECT `id`, `country` FROM `' . self::PREFIX .  'country`';
         $listCountry = $this->db->query($query);
         $countries = $listCountry->fetchAll(PDO::FETCH_OBJ);
         return $countries;

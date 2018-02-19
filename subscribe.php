@@ -27,31 +27,31 @@ include_once 'header.php';
             <!-- Création de l'emplacement du nom -->
             <div class="input-field l4">
               <i class="material-icons prefix">account_circle</i>
-              <input type="text" name="lastname" class="grey darken-4 white-text" id="lastname" required value="<?= $users->lastname; ?>">
+              <input type="text" name="lastname" class="grey darken-4 white-text" id="lastname" required value="<?= $NewUsers->lastname; ?>">
               <label for="lastname">Nom : <p class="textError"><?= $textName; ?></p></label>
             </div>
             <!-- Création de l'emplacement du prénom -->
             <div class="input-field l4">
               <i class="material-icons prefix">account_circle</i>
-              <input type="text" name="firstname" class="grey darken-4 white-text" id="firstname" required value="<?= $users->firstname; ?>">
+              <input type="text" name="firstname" class="grey darken-4 white-text" id="firstname" required value="<?= $NewUsers->firstname; ?>">
               <label for="firstname">Prénom : <p class="textError"><?= $textFirstname; ?></p></label>
             </div>
             <!-- Création de l'emplacement Pseudo -->
             <div class="input-field l4">
               <i class="material-icons prefix">account_circle</i>
-              <input type="text" name="username" class="grey darken-4 white-text" id="username" required value="<?= $users->username; ?>">
+              <input type="text" name="username" class="grey darken-4 white-text" id="username" required value="<?= $NewUsers->username; ?>">
               <label for="username">Choisissez un pseudo : <p class="textError"><?= $textUsername; ?></p></label>
             </div>
             <!-- Création de l'emplacement Date de naissance -->
             <div class="input-field l4">
               <i class="material-icons prefix">perm_contact_calendar</i>
-              <input type="text" name="birthdate" class="datepicker grey darken-4 white-text" id="birthdate" required value="<?= $users->birthdateFrench; ?>">
+              <input type="text" name="birthdate" class="datepicker grey darken-4 white-text" id="birthdate" required value="<?= $NewUsers->birthdateFrench; ?>">
               <label for="birthdate">Votre Date de naissance: <p class="textError"><?= $textBirthday; ?></p></label>
             </div>
             <!-- Création de l'emplacement du mail -->
             <div class="input-field l4">
               <i class="material-icons prefix">contact_mail</i>
-              <input type="email" name="mail" class="grey darken-4 white-text" id="mail" required value="<?= $users->mail; ?>">
+              <input type="email" name="mail" class="grey darken-4 white-text" id="mail" required value="<?= $NewUsers->mail; ?>">
               <label for="email">Votre Email : <p class="textError"><?= $textMail; ?></p></label>
             </div>
             <!-- création de la liste deroulante permettant de choisir son pays -->
@@ -63,7 +63,7 @@ include_once 'header.php';
                 foreach ($countryList as $country)
                 {
                   ?>
-                  <option value="<?= $country->id ?>"<?= $users->country == $country->id ? ' selected' : ''; ?>><?= $country->country ?></option>
+                  <option value="<?= $country->id ?>"<?= $NewUsers->country == $country->id ? ' selected' : ''; ?>><?= $country->country ?></option>
                   <?php
                 }
                 ?> 
@@ -78,7 +78,7 @@ include_once 'header.php';
                 foreach ($regionList as $region)
                 {
                   ?>
-                  <option value="<?= $region->id ?>"<?= $users->region == $region->id ? ' selected' : ''; ?>><?= $region->region ?></option>
+                  <option value="<?= $region->id ?>"<?= $NewUsers->region == $region->id ? ' selected' : ''; ?>><?= $region->region ?></option>
                   <?php
                 }
                 ?> 
@@ -88,13 +88,13 @@ include_once 'header.php';
             <!-- Création de l'emplacement du mdp -->
             <div class="input-field l4">
               <i class="material-icons prefix">vpn_key</i>
-              <input type="password" name="passwordUser" class="grey darken-4 white-text" id="passwordUser" required value="<?= $users->password ?>">
+              <input type="password" name="passwordUser" class="grey darken-4 white-text" id="passwordUser" required value="<?= $NewUsers->password ?>">
               <label for="passwordUser">Mot de passe avec caractère spéciaux et chiffres : <p class="textError"><?= $textPassword; ?></p></label>
             </div>
             <!-- Création de l'emplacement de la vérification -->
             <div class="input-field l4">
               <i class="material-icons prefix">vpn_key</i>              
-              <input type="password" name="passwordCheck" class="grey darken-4 white-text" id="passwordCheck" required value="<?= $users->checkPassword ?>">
+              <input type="password" name="passwordCheck" class="grey darken-4 white-text" id="passwordCheck" required value="<?= $NewUsers->checkPassword ?>">
               <label for="passwordCheck">Répétez votre mot de passe : </label>
             </div>            
             <!-- Possibilité d'ajouter une photo de profil -->

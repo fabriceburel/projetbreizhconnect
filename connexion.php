@@ -2,7 +2,7 @@
 include_once 'models/dataBase.php';
 include_once 'models/user.php';
 include 'controllers/headerController.php';
-include_once 'controllers/buttonConnectOffController.php';
+include_once 'controllers/buttonLogOffController.php';
 include_once 'header.php';
 if ($checklogin)
 {    
@@ -39,7 +39,7 @@ if ($checklogin)
                     </div>
                     <!-- Ajout du bouton pour annuler l'inscritpion -->
                     <div class="input-field l4 center-align">
-                        <button name="undo" aria-hidden="true" class="btn waves-effect waves-dark grey darken-4"><a href="index.php">Annuler ma connexion</a></button>
+                        <button aria-hidden="true" class="btn waves-effect waves-dark grey darken-4"><a href="index.php">Annuler ma connexion</a></button>
                     </div>
                 </form>
             </div>

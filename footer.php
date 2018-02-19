@@ -38,7 +38,6 @@
                 $('.regionModal').hide();
             }
         });
-
     });
 </script>
 <script src="assets/js/buttonConnectOff.js"></script>

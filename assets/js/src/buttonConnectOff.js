@@ -1,5 +1,5 @@
 $(document).ready(function(){
-$('#submitConnexion').click(function{
+$('#submitConnexion').click(function(){
 //Appel de la méthode Ajax pour le post pour la fenetre modal de connexion
 $.post(
         // Appel du controller de buttonConnectOffController

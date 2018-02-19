@@ -1,6 +1,6 @@
 <?php
 
-$users = new users();
+$NewUsers = new users();
 $country = new country();
 $countryList = $country->getListCountry();
 $region = new region();
@@ -12,10 +12,10 @@ $regexPassword = '/^(?!(<|>))(([\w\d]+\W+)+|(\W+[\w\d]+)+|([\w\d]+\W+[\w\d]+)+)$
 $regexLocalisation = '/^[0-9]{1,3}$/';
 if (!empty($_POST['mail']))
 {
-    $users->mail = strip_tags($_POST['mail']);
-    if (filter_var($users->mail, FILTER_VALIDATE_EMAIL))
+    $NewUsers->mail = strip_tags($_POST['mail']);
+    if (filter_var($NewUsers->mail, FILTER_VALIDATE_EMAIL))
     {
-        if ($users->existMail())
+        if ($NewUsers->existMail())
         {
             $textMail = '';
             $checkMail = true;
@@ -41,13 +41,13 @@ else
 if (isset($_POST['firstname']))
 {
     //si il existe on l'hydrate dans l'objet users
-    $users->firstname = strip_tags($_POST['firstname']);
-    $_SESSION['firstname'] = $users->firstname;
-    if (preg_match($regexName, $users->firstname))
+    $NewUsers->firstname = strip_tags($_POST['firstname']);
+    $_SESSION['firstname'] = $NewUsers->firstname;
+    if (preg_match($regexName, $NewUsers->firstname))
     {
         $textFirstname = '';
         $checkFirstname = true;
-        $users->firstname = strtolower($users->firstname);
+        $NewUsers->firstname = strtolower($NewUsers->firstname);
     }
     else
     {
@@ -64,11 +64,11 @@ else
 if (isset($_POST['username']))
 {
     //si il existe on l'hydrate dans l'objet users
-    $users->username = strip_tags($_POST['username']);
+    $NewUsers->username = strip_tags($_POST['username']);
     //vérification du format du pseudo.
-    if (preg_match($regexUsername, $users->username))
+    if (preg_match($regexUsername, $NewUsers->username))
     {
-        if ($users->existUsername())
+        if ($NewUsers->existUsername())
         {
             $textUsername = '';
             $checkUsername = true;
@@ -93,13 +93,13 @@ else
 //Vérification de l'existance du prénom
 if (isset($_POST['lastname']))
 {
-    $users->lastname = strtolower(strip_tags($_POST['lastname']));
-    $_SESSION['lastname'] = $users->lastname;
-    if (preg_match($regexName, $users->lastname))
+    $NewUsers->lastname = strtolower(strip_tags($_POST['lastname']));
+    $_SESSION['lastname'] = $NewUsers->lastname;
+    if (preg_match($regexName, $NewUsers->lastname))
     {
         $textName = '';
         $checkName = true;
-        $users->lastname = strtolower($users->lastname);
+        $NewUsers->lastname = strtolower($NewUsers->lastname);
     }
     else
     {
@@ -115,20 +115,20 @@ else
 // Vérification de la saisie pour le mot de passe
 if (isset($_POST['passwordUser']) && isset($_POST['passwordCheck']))
 {
-    $users->password = $_POST['passwordUser'];
-    $password = $users->password;
-    $users->checkPassword = $_POST['passwordCheck'];
-    if (preg_match($regexPassword, $users->password) && strlen($users->password) > 5 && strlen($users->password < 20))
+    $NewUsers->password = $_POST['passwordUser'];
+    $password = $NewUsers->password;
+    $NewUsers->checkPassword = $_POST['passwordCheck'];
+    if (preg_match($regexPassword, $NewUsers->password) && strlen($NewUsers->password) > 5 && strlen($NewUsers->password < 20))
     {
         $textPassword = '';
         $checkPassword = true;
     }
-    elseif (!preg_match($regexPassword, $users->password))
+    elseif (!preg_match($regexPassword, $NewUsers->password))
     {
         $textPassword = 'Le  mot de passe n\'est pas conforme, recommencez !';
         $checkPassword = false;
     }
-    elseif ($_POST['passwordCheck'] != $users->password)
+    elseif ($_POST['passwordCheck'] != $NewUsers->password)
     {
         $textPassword = 'Les mots de passe saisis ne sont pas identique, recommencez !';
         $checkPassword = false;
@@ -141,17 +141,17 @@ else
 }
 if (isset($_POST['country']))
 {
-    $users->country = intval(strip_tags($_POST['country']));
-    if (preg_match($regexLocalisation, $users->country))
+    $NewUsers->country = intval(strip_tags($_POST['country']));
+    if (preg_match($regexLocalisation, $NewUsers->country))
     {
         $textCountry = '';
         $checkCountry = true;
-        if ($users->country == 74)
+        if ($NewUsers->country == 74)
         {
             if (!empty($_POST['region']))
             {
-                $users->region = intval(strip_tags($_POST['region']));
-                if (preg_match($regexLocalisation, $users->region))
+                $NewUsers->region = intval(strip_tags($_POST['region']));
+                if (preg_match($regexLocalisation, $NewUsers->region))
                 {
                     $textRegion = '';
                     $checkRegion = true;
@@ -190,17 +190,17 @@ else
     $checkRegion = true;
 }
 //on vérifie la date de naissance
-if (isset($_POST['birthdate']))
+if (!empty($_POST['birthdate']))
 {
-    //si elle existe, on l'hydrate dans l'objet $users puis on la met dans un format connu pour séparer jour mois et année afin de vérifier si c'est une date qui existe réellement
-    $users->birthdateFrench = strip_tags($_POST['birthdate']);
-    list($day, $month, $year) = explode('/', $users->birthdateFrench);
+    //si elle existe, on l'hydrate dans l'objet $NewUsers puis on la met dans un format connu pour séparer jour mois et année afin de vérifier si c'est une date qui existe réellement
+    $NewUsers->birthdateFrench = strip_tags($_POST['birthdate']);
+    list($day, $month, $year) = explode('/', $NewUsers->birthdateFrench);
     $day = intval($day);
     $month = intval($month);
     $year = intval($year);
     //Concaténation de la date au format SQL dans l'objet users
-    $users->birthdate = $year . '-' . $month . '-' . $day;
-    $_SESSION['birthdate'] = $users->birthdate;
+    $NewUsers->birthdate = $year . '-' . $month . '-' . $day;
+    $_SESSION['birthdate'] = $NewUsers->birthdate;
     if (checkdate($month, $day, $year))
     {
         $textBirthday = '';
@@ -222,10 +222,10 @@ if (!empty($_FILES['avatar']['name']))
 {
     //on récupère le nom de la photo
     $infoPicture = pathinfo($_FILES['avatar']['name']);
-    $users->avatar = $_FILES['avatar']['name'];
+    $NewUsers->avatar = $_FILES['avatar']['name'];
     //on formate le nom du fichier récupéré
-    strtr($users->avatar, 'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðòóôõöùúûüýÿ', 'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
-    $users->avatar = preg_replace('/([^.a-z0-9]+)/i', '-', $users->avatar);
+    strtr($NewUsers->avatar, 'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðòóôõöùúûüýÿ', 'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
+    $NewUsers->avatar = preg_replace('/([^.a-z0-9]+)/i', '-', $NewUsers->avatar);
     //on vérifie que l'extension du nom de la photo correspond à un format photo
     if ($infoPicture['extension'] == 'jpg' | $infoPicture['extension'] == 'png' | $infoPicture['extension'] == 'jpeg')
     {
@@ -248,8 +248,8 @@ else
 if ($checkBirthday && $checkUsername && $checkCountry && $checkMail && $checkFirstname && $checkRegion && $checkName && $checkPassword && $checkPicture)
 {
     //Si tout est correctement rempli alors je chiffre le mot de passe de l'utilisateur à l'aide de la fonction password_hash qui génère automatique un salt
-    $users->passwordHash = password_hash($users->password, PASSWORD_DEFAULT);
-    if (!$users->addUsers())
+    $NewUsers->passwordHash = password_hash($NewUsers->password, PASSWORD_DEFAULT);
+    if (!$NewUsers->addUsers())
     {
         $insertSuccess = false;
         $texterror = 'L\'inscription n a pas fonctionné';
@@ -259,7 +259,7 @@ if ($checkBirthday && $checkUsername && $checkCountry && $checkMail && $checkFir
         $insertSuccess = true;
         $texterror = 'l\'envoi a bien fonctionné';
         //une fois l'insertion réussi on va créer les dossier de stockage des fichiers de ce nouveau utilisateur
-        $userId = $users->getUserIdbyUsername();
+        $userId = $NewUsers->getUserIdbyUsername();
         if ($userId != 0)
         {
             $_SESSION['id'] = $userId;
@@ -274,9 +274,9 @@ if ($checkBirthday && $checkUsername && $checkCountry && $checkMail && $checkFir
                     die('Votre inscription est validé mais un echec lors de la création de vos dossier de stockage a eu lieu, merci de contacter l\'administrateur du site pour résoudre se problème');
                 }
                 //On va uploader l'avatar du nouveau utilisateur dans le fichier profile que nous venons de créer, la fonction renverra TRUE si l'action c'est bien réalisé
-                if ($users->avatar != '')
+                if ($NewUsers->avatar != '')
                 {
-                    if (move_uploaded_file($_FILES['avatar']['tmp_name'], $folderAvatar . $users->avatar))
+                    if (move_uploaded_file($_FILES['avatar']['tmp_name'], $folderAvatar . $NewUsers->avatar))
                     {
                         $textPicture = 'Upload effectué avec succès !';
                         $checkPicture = true;
