@@ -4,9 +4,9 @@ include_once 'models/user.php';
 include_once 'models/relationship.php';
 include_once 'models/country.php';
 include_once 'models/region.php';
-include 'controllers/headerController.php';
-include 'controllers/searchFriendByCountryController.php';
-include 'header.php';
+include_once 'controllers/headerController.php';
+include_once 'controllers/searchFriendByCountryController.php';
+include_once 'header.php';
 ?>
 <h2 class="col xl6 center-align">Rechercher une personne par pays</h2>
 <!-- h3 pas nécessaire tant que la fenetre modal n'est pas réactivée -->
@@ -32,7 +32,7 @@ include 'header.php';
                             foreach ($countryList as $country)
                             {
                                 ?>
-                                <option value="<?= $country->id ?>" <?= $FriendUsers->country == $country->id ? 'selected' : ''; ?>><?= $country->country ?></option>
+                                <option value="<?= $country->id ?>" <?= $FriendUsers->idCountry == $country->id ? 'selected' : ''; ?>><?= $country->country ?></option>
                                 <?php
                             }
                             ?> 
@@ -49,7 +49,7 @@ include 'header.php';
                     foreach ($regionList as $region)
                     {
                         ?>
-                        <option value="<?= $region->id ?>" <?= $FriendUsers->region == $region->id ? 'selected' : ''; ?>><?= $region->region ?></option>
+                        <option value="<?= $region->id ?>" <?= $FriendUsers->idRegion == $region->id ? 'selected' : ''; ?>><?= $region->region ?></option>
                         <?php
                     }
                     ?> 

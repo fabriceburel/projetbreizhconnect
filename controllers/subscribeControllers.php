@@ -8,8 +8,10 @@ $regionList = $region->getListRegion();
 //regex pour le prénom, accepte les prénom simple d'une taille minimum de 2 caractères sans importances sur la cast et les prénoms composé de 2 caractère par partie 
 $regexName = '/((^[éèàëîïêa-z\']{2,10}[-][éèàîïëêa-z\']{2,10}$)|(^[éèàîïëêa-z\']{2,15}$))/i';
 $regexUsername = '/^[éèàëêîïa-z0-9]{2,20}$/i';
-$regexPassword = '/^(?!(<|>))(([\w\d]+\W+)+|(\W+[\w\d]+)+|([\w\d]+\W+[\w\d]+)+)$/';
+//regex pour le mot de passe accepte tout les caractères mais oblige d'avoir des lettres et soit un caractère spécial soit un nombre
+$regexPassword = '/((W\d\w)|(\w\d\W)|(\d\w\W)|(\d\w\W)|(\d\w)|(\w\d)|(\w\W)|(\W\w))/i';
 $regexLocalisation = '/^[0-9]{1,3}$/';
+$textPicture = '';
 if (!empty($_POST['mail']))
 {
     $NewUsers->mail = strip_tags($_POST['mail']);
@@ -90,7 +92,7 @@ else
     $textUsername = '';
     $checkUsername = false;
 }
-//Vérification de l'existance du prénom
+//Vérification de l'existance du nom de famille
 if (isset($_POST['lastname']))
 {
     $NewUsers->lastname = strtolower(strip_tags($_POST['lastname']));
@@ -141,17 +143,17 @@ else
 }
 if (isset($_POST['country']))
 {
-    $NewUsers->country = intval(strip_tags($_POST['country']));
-    if (preg_match($regexLocalisation, $NewUsers->country))
+    $NewUsers->idCountry = intval(strip_tags($_POST['country']));
+    if (preg_match($regexLocalisation, $NewUsers->idCountry))
     {
         $textCountry = '';
         $checkCountry = true;
-        if ($NewUsers->country == 74)
+        if ($NewUsers->idCountry == 74)
         {
             if (!empty($_POST['region']))
             {
-                $NewUsers->region = intval(strip_tags($_POST['region']));
-                if (preg_match($regexLocalisation, $NewUsers->region))
+                $NewUsers->idRegion = intval(strip_tags($_POST['region']));
+                if (preg_match($regexLocalisation, $NewUsers->idRegion))
                 {
                     $textRegion = '';
                     $checkRegion = true;
@@ -252,12 +254,12 @@ if ($checkBirthday && $checkUsername && $checkCountry && $checkMail && $checkFir
     if (!$NewUsers->addUsers())
     {
         $insertSuccess = false;
-        $texterror = 'L\'inscription n a pas fonctionné';
+        $textError = 'L\'inscription n a pas fonctionné,';
     }
     else
     {
         $insertSuccess = true;
-        $texterror = 'l\'envoi a bien fonctionné';
+        $textError = 'Votre inscription a bien été prise en compte';
         //une fois l'insertion réussi on va créer les dossier de stockage des fichiers de ce nouveau utilisateur
         $userId = $NewUsers->getUserIdbyUsername();
         if ($userId != 0)
@@ -271,7 +273,7 @@ if ($checkBirthday && $checkUsername && $checkCountry && $checkMail && $checkFir
                 //Ici on crée uniquement le dossier de files
                 if (!mkdir($folderFiles, 0777, false))
                 {
-                    die('Votre inscription est validé mais un echec lors de la création de vos dossier de stockage a eu lieu, merci de contacter l\'administrateur du site pour résoudre se problème');
+                    $textError = 'Votre inscription est validé mais un echec lors de la création de vos dossier de stockage a eu lieu, merci de contacter l\'administrateur du site pour résoudre se problème';
                 }
                 //On va uploader l'avatar du nouveau utilisateur dans le fichier profile que nous venons de créer, la fonction renverra TRUE si l'action c'est bien réalisé
                 if ($NewUsers->avatar != '')
@@ -291,7 +293,7 @@ if ($checkBirthday && $checkUsername && $checkCountry && $checkMail && $checkFir
             }
             else
             {
-                die('Votre inscription est validé mais un echec lors de la création de vos dossier de stockage a eu lieu, merci de contacter l\'administrateur du site pour résoudre se problème');
+                $textError = 'Votre inscription est validé mais un echec lors de la création de vos dossier de stockage a eu lieu, merci de contacter l\'administrateur du site pour résoudre se problème';
             }
         }
     }

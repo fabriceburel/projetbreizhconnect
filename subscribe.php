@@ -11,7 +11,7 @@ include_once 'header.php';
   <?php
   if ($checkBirthday && $checkUsername && $checkCountry && $checkMail && $checkFirstname && $checkRegion && $checkName && $checkPassword && $checkPicture && $insertSuccess)
   {
-    echo $texterror;
+    echo $textError;
   }
   else
   {
@@ -63,7 +63,7 @@ include_once 'header.php';
                 foreach ($countryList as $country)
                 {
                   ?>
-                  <option value="<?= $country->id ?>"<?= $NewUsers->country == $country->id ? ' selected' : ''; ?>><?= $country->country ?></option>
+                  <option value="<?= $country->id ?>"<?= $NewUsers->idCountry == $country->id ? ' selected' : ''; ?>><?= $country->country ?></option>
                   <?php
                 }
                 ?> 
@@ -78,7 +78,7 @@ include_once 'header.php';
                 foreach ($regionList as $region)
                 {
                   ?>
-                  <option value="<?= $region->id ?>"<?= $NewUsers->region == $region->id ? ' selected' : ''; ?>><?= $region->region ?></option>
+                  <option value="<?= $region->id ?>"<?= $NewUsers->idRegion == $region->id ? ' selected' : ''; ?>><?= $region->region ?></option>
                   <?php
                 }
                 ?> 

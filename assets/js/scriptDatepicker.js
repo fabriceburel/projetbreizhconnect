@@ -11,7 +11,7 @@ $('.datepicker').pickadate({
     monthsShort: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
     weekdaysFull: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
     weekdaysShort: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
-    weekdaysLetter: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+    weekdaysLetter: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
     //Permet de définir la date maximal du datepicker, ici 13 ans en arrière par rapport à aujourd'hui
     min: -365 * 120,
     max: -365 * 15,

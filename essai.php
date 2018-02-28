@@ -7,7 +7,7 @@
 </head>
 <body>
 <!-- affichage des video, la notre et celle de notre pair. -->
-<video id="video" autoplay height="20px" width="20px"></video>
+<video id="video" autoplay height="200px" width="200px"></video>
 <video id="otherPeer" autoplay "400px" width="200px"></video>
 
 <script>

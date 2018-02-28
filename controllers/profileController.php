@@ -1,10 +1,5 @@
 <?php
-$users = new users();
-if(!empty($_SESSION['id'])){
-    $users->id = $_SESSION['id'];
-    $user = $users->getProfileUserById();
-}else{
+if(empty($_SESSION['id'])){
     header('Location:index.php');
 }
-
 

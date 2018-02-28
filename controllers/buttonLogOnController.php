@@ -1,7 +1,7 @@
 <?php
 //include 'controllers/headerController.php';
 $users = new users();
-$users->id = $_SESSION['id'];
+$users->id = intval($_SESSION['id']);
 if (isset($_POST['logOut']))
 {
     session_destroy();

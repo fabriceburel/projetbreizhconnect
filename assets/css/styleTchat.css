@@ -1,3 +1,17 @@
-.message{
-    height: 25em; 
+#listMessage{
+    height: 43em; 
+    overflow:auto;
+    padding:5px;
+    bottom: 0;
+}
+form#sendMessage{
+    padding: 5px;
+    height: 7em;
+}
+#listFriend{
+    min-height: 50em;
+    overflow:auto;
+}
+friend{
+    border: 1px solid black;
 }

@@ -16,7 +16,7 @@ include_once 'header.php';
         }
         else
         {
-            $pathPicture =  'media/'.$frienduser->id.'/profile/'.$frienduser->avatar;
+            $pathPicture = 'media/' . $frienduser->id . '/profile/' . $frienduser->avatar;
         }
         ?>
              <img class="center-block" src="<?= $pathPicture ?>" width="100" height="120" alt="ma photo de profil">
@@ -29,8 +29,8 @@ include_once 'header.php';
             {
                 ?>
                 <h3>region : <span><?= $frienduser->region; ?></span></h3>
-<?php } ?>
-            <h3>Date de naissance : <span><?= $frienduser->birthdate ?></span></h3>        
+            <?php } ?>
+            <h3>Date de naissance : <span><?= $frienduser->birthdateFrench ?></span></h3>        
         </div>
     </div>    
 </div>
