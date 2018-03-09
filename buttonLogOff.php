@@ -3,13 +3,14 @@
     <!--En tete du site -->
     <div class="col offset-l3  l5"><h1>BZHConnect</h1></div>
     <div class="col offset-l1 l3 row" id="button-header">
+
         <h2><a href="#modalConnexion" data-toggle="modal" class="col l12 waves-effect waves-light btn modal-trigger connexion">CONNEXION</a></h2>
         <!-- Modal Structure -->
         <div id="modalConnexion" class="modal">
             <div class="modal-content">
-                <h4>CONNEXION</h4>
+                <h3>CONNEXION</h3>
             </div>
-            <form action="connexion.php" method="POST">            
+            <form action="connexion.php" method="POST"  class="connexion">            
                 <!-- Création de l'emplacement Pseudo -->
                 <div class="input-field l4">
                     <i class="material-icons prefix">account_circle</i>
@@ -28,12 +29,11 @@
                 </div>
                 <!-- Ajout du bouton pour annuler l'inscritpion -->
                 <div class="input-field l4 center-align">
-                    <button name="undo" aria-hidden="true" class="btn waves-effect waves-dark grey darken-4"><a href="index.php">Annuler ma connexion</a></button>
+                    <button name="undo" aria-hidden="true" class="btn waves-effect waves-dark grey darken-4"><a class="white-text" href="index.php">Annuler ma connexion</a></button>
                 </div>
             </form>
         </div>
-        <h2><a href="subscribe.php" class="col l12 waves-effect waves-light btn inscription">INSCRIPTION</a></h2>
-
+        <h2><a href="subscribe.php" class="col l12 waves-effect waves-light btn inscription valign-wrapper">INSCRIPTION</a></h2>
     </div>
 </div>
 

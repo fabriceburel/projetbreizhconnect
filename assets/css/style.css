@@ -13,22 +13,42 @@ body{
     margin:0;
 }
 #heading{
-    background-image: url("../img/hermine.jpg");
+    background-color: #333;
     background-repeat:round;
-    background-size: 300px;
     margin-bottom: 0;
+    padding:0
 }
 #heading h1{
     color: white;
     text-align: center;
-    background: black;
     margin-right: 13%;
     margin-left: 13%;
-    padding: 2%;
+    padding: 0%;
     font-weight: bold;
+    font-size: 4em;
+}
+/* permet de styliser le bouton de la navbar de la page courrante */
+.currentPage a{
+    background-color: white;
+    color: black;
+}
+.currentPage a:hover{
+    background-color: #EEE;
 }
 header{
     font-family: 'Celtic Garamond the 2nd';
+}
+nav{
+    background-color: #333;
+    border-top: 1px solid #111;
+}
+nav ul a{
+    font-size: 1.2em;
+    font-weight: bold;
+}
+nav ul a:hover{
+    font-size: 1.25em;
+    background-color: #101010;
 }
 #button-header{
     margin-top: -30px;
@@ -40,13 +60,13 @@ header{
     color: white;
     background-color: black;
     border: none;
-    height: 6em;;
-    padding-top: 25px;
+    height: 4em;
+    padding-top: 1em;
 }
 
 .btn.connexion:hover{
     opacity: 0.8;
-    background-color: black;
+    background-color: #222;;
 }
 
 .btn.inscription{
@@ -54,15 +74,15 @@ header{
     background-color: white;
     font-weight: bold;
     border: none;
-    height: 6em;;
-    padding-top: 25px;
+    height: 4em;;
+    padding-top: 1em;
 }
 form.btn.logOut{
     color:black;
     background-color: white;
     font-weight: bold;
     border: none;
-    height: 6em;;
+    height: 4em;;
     padding: 0;
 }
 div.logOut{
@@ -70,8 +90,7 @@ div.logOut{
     font-size:1em;
 }
 div.logOut input{
-
-    height: 6em;
+    height: 4em;
     width: 100%;
 }
 .modal-content{
@@ -85,29 +104,12 @@ div.logOut input{
     font-weight: bold;
 }
 .btn.inscription:hover, .btn-header:focus, form.logOut:hover{
-    opacity: 0.9;
-    background-color: white;
-    color:black;
+    background-color: #BBB;
 }
 .btn-inscription .badge { 
     color: #FFFFFF; 
     background-color: #000000; 
 }
-/*mise en forme de la baniere menu */
-/*suppression des margin et padding pour la bannière */
-nav{
-    background: linear-gradient(black, #E0DFE7);
-}
-#chapitre{
-    /*mise en forme du menu sous forme horizontal*/
-    font-family: 'Celtic Garamond the 2nd';
-    display: table;
-    width: 100%;
-    margin:0;
-    padding: 0;
-    background: linear-gradient(black, #E0DFE7);
-}
-
 /*mise en forme du footer */
 #footer a{
     text-decoration: none;
@@ -132,7 +134,7 @@ nav{
     left: 0;
 }
 /*mise en forme des formulaires */
-form{
+form.subscribe, form.connexion, form.searchUser {
     background-color: white;
     padding: 100px;
 }
@@ -158,6 +160,7 @@ input.select-dropdown{
 .input-field label {
     color: white;
     font-weight: bold;
+    font-size: 1.1em;
     padding-left: 1em;
 }
 /* label focus color */
@@ -167,7 +170,7 @@ input.select-dropdown{
 .input-field input[type=password]:not(.browser-default):focus:not([readonly]) + label
 {
     color: #000;
-    font-size: 2em;
+    font-size: 1.5em;
     margin-top: -1.1em;
 }
 /* label underline focus color */
@@ -234,7 +237,7 @@ input.select-dropdown{
     color:white;
     padding-left: 1em;
 }
-.dropdown-content li:hover > span {
+.dropdown-content li:hover > span{
     background-color: white;
     color: black;
     font-weight: bold;
@@ -265,25 +268,59 @@ table{
     margin-bottom: 6em;
 }
 @media all and (max-device-width: 634px){
-#heading h1{
-    margin-right: 10%;
-    margin-left: 10%;
-    padding: 5%;
-    font-weight: bold;
-    font-size: 2.2em;
-}
+    .container{
+        width: 96%;
+    }
+    #heading h1{
+        margin-right: 10%;
+        margin-left: 10%;
+        padding: 5%;
+        font-weight: bold;
+        font-size: 2.2em;
+    }
     h2{
         font-size : 2em;
-    }
-    form{
-        padding-left: 1em;
-        padding-right: 1em;        
     }
     .input-field{
         padding-left: 0;
     }
     div.col.s12{
         padding: 0;
+    }
+    form.subscribe, form.connexion, form.searchUser {
+        padding: 0.4em;
+    }
+    .input-field .prefix ~ input {
+        font-size: 0.9em;
+        width: 300px;
+    }
+    .input-field .prefix ~ select {
+        font-size: 0.9em;
+        
+    }
+    .input-field .prefix ~ label {
+        padding-left: 20px;
+        font-size: 0.9em;
+    }
+    .input-field input[type=text]:not(.browser-default):focus:not([readonly]) + label,
+    .input-field label:not(.label-icon).active,
+    .input-field input[type=email]:not(.browser-default):focus:not([readonly]) + label,
+    .input-field input[type=password]:not(.browser-default):focus:not([readonly]) + label
+    {
+        margin-left: 0;
+        margin-bottom: 2em;
+        padding-left: 0;
+        font-size: 1.2em; 
+        width: 400px;
+    }
+    .input-field .prefix ~ label.localisation{
+        margin-left: 0;
+        margin-bottom: 2em;
+        padding-left: 0;
+        font-size: 1em;        
+    }
+    .input-field .prefix ~ label.localisation p{     
+        font-size: 0.6em;
     }
 }
 

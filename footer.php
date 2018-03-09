@@ -5,9 +5,10 @@
         </div>
     </div>
 </footer> -->
-<script src="assets/lib/jquery.min/index.js"></script>
+<script type="text/javascript" src="assets/lib/jquery.min/index.js"></script>
 <script type="text/javascript" src="assets/lib/materialize/dist/js/materialize.min.js"></script>
-<script src="assets/js/scriptDatepicker.js"></script>
+<script type="text/javascript" src="assets/js/navbar.js"></script>
+<script type="text/javascript" src="assets/js/scriptDatepicker.js"></script>
 <script>
     $('.modal').modal();
     $(document).ready(function () {
@@ -29,8 +30,8 @@
         });
     });
 </script>
-<script src="assets/js/buttonConnectOff.js"></script>
-<script src="assets/js/tchatAjax.js"></script>
-<script src="assets/js/profileAjax.js"></script>
+<script type="text/javascript" src="assets/js/buttonConnectOff.js"></script>
+<script type="text/javascript" src="assets/js/tchatAjax.js"></script>
+<script type="text/javascript" src="assets/js/profileAjax.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <?php
-
+$currentPage='search';
 //On instancie la class users
 $FriendUsers = new users();
 //On instancie la class relationship
@@ -18,7 +18,7 @@ $textRegion = '';
 if (isset($_POST['searchFriend']))
 {
     //On récupère la valeur du POST username
-    $FriendUsers->username = htmlspecialchars($_POST['username']);
+    $FriendUsers->username = trim($_POST['username']);
     /*
      * On vérifie que le $ POST country est bien un on nombre pour ensuite le stocker dans l'attribut country de la class users
      * On vérifira ensuite que le champs selectionné correspond à la france (valeur 74)
@@ -27,8 +27,8 @@ if (isset($_POST['searchFriend']))
      */
     if (intval($_POST['country']) != 0)
     {
-        $FriendUsers->country = intval($_POST['country']);
-        if ($FriendUsers->country == 74)
+        $FriendUsers->idCountry = intval($_POST['country']);
+        if ($FriendUsers->idCountry == 74)
         {
             if (intval($_POST['region']) != 0)
             {
@@ -36,20 +36,23 @@ if (isset($_POST['searchFriend']))
             }
             else
             {
-                $textRegion = 'Vous pouvez préciser votre recherche en sélectionnant une région';
-                $FriendUsers->region = 100;
+                $textRegion = 'Préciser votre recherche en sélectionnant une région';
+                $FriendUsers->idRegion = 9000;
             }
         }
         else
         {
-            $FriendUsers->region = NULL;
+            $FriendUsers->idRegion = NULL;
         }
         $userList = $FriendUsers->getListFriendByCountry();
     }
     else
     {
-        $textCountry = 'Sélectionner un pays';
+        $FriendUsers->idCountry = 10000;
+        $FriendUsers->idRegion = 10000;
+        $textCountry = 'Préciser votre recherche en sélectionnant un pays';
     }
+    $userList = $FriendUsers->getListFriendByCountry();
 }
 /*
  * Si l'utilisateur est connecté on appelera la méthode listFriendAskSend de la class users afin de récupérer les personnes que celui ci a demandé en ami 
@@ -66,7 +69,7 @@ if (!empty($_SESSION['id']))
     $listFriendBlock = $relationship->listFriendBlock();
 }
 /*
- * Si l'utilisateur clique à cliquer sur le bouton Ajouter
+ * Si l'utilisateur à cliquer sur le bouton Ajouter
  * On récupère l'id de cet personne et on appel ensuite la méthode addFriend de la class relationship
  */
 if (isset($_POST['addFriend']))

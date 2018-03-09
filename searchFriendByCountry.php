@@ -14,7 +14,7 @@ include_once 'header.php';
 <div class="row">
     <div class="col s12 offset-l2 l8 offset-xl3 xl6">
         <!-- Création du formulaire d'inscription-->
-        <form action="#" method="POST">
+        <form class="searchUser" action="#" method="POST">
             <!-- Création de l'emplacement Pseudo -->
             <div class="input-field l4">
                 <i class="material-icons prefix">account_circle</i>
@@ -32,11 +32,11 @@ include_once 'header.php';
                             foreach ($countryList as $country)
                             {
                                 ?>
-                                <option value="<?= $country->id ?>" <?= $FriendUsers->idCountry == $country->id ? 'selected' : ''; ?>><?= $country->country ?></option>
+                                <option value="<?= $country->id ?>"<?= $FriendUsers->idCountry == $country->id ? 'selected' : '' ?>><?= $country->country ?></option>
                                 <?php
                             }
                             ?> 
-                        </select>
+                        </select>   
                         <label class="localisation" for="country">Pays : <p class="textError"><?= $textCountry; ?></p></label>
                     </div>
                 </div>
@@ -70,87 +70,87 @@ if (isset($_POST['searchFriend']))
     {
         ?>
         <div class="row">
-            <table class="striped col s4 M4 l4 friend centered">
-                <thead>
-                    <tr>
-                        <th>pseudo</th>
-                        <th>PAYS</th>
-                        <th>REGION</th>
-                        <th>PROFIL</th>
-                        <?php
-                        if ($relationship->idTransmitter != 0)
-                        {
-                            ?>
-                            <th>Ajouter en ami</th>
-                        <?php } ?>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    foreach ($userList AS $user)
+            <?php
+            $country = '';
+            $region = '';
+            foreach ($userList AS $user)
+            { //on vérifie en premier que l'utilisateur récupéré n'est pas l'utisateur connecté
+                if (!($user->id == $relationship->idTransmitter))
+                {
+                    if ($country != $user->country | $region != $user->region)
                     {
-                        //on vérifie en premier que l'utilisateur récupéré n'est pas l'utisateur connecté
-                        if (!($user->id == $relationship->idTransmitter))
-                        {
-                            ?>
-                            <tr>
-                                <td><?= $user->username ?></td>
-                                <td><?= $user->country ?></td>
-                                <td><?= $user->region ?></td>
-                                <td><a class="btn" href="profilFriend.php?idFriend=<?= $user->id ?>">PROFIL</a></td>
-                                <?php
-                                /*
-                                 * On vérifie si l'utilisateur existe dans l'un des tableaux récupérer dans le controller
-                                 * Pour personnaliser le bouton en fonction des relations récupérer dans l'attribut id de l'objet user avec l'utilisateur connecté
-                                 */
-                                if ($relationship->idTransmitter != 0)
-                                {
-                                    if (in_array($user->id, $listFriendAskSend))
-                                    {
-                                        ?>
-                                        <td class="center"><input type="input" value="En Attente" class="btn grey col l9"></td>
-                                        <?php
-                                    }
-                                    else if (in_array($user->id, $listFriend))
-                                    {
-                                        ?>
-                                        <td class="center"><input type="input" value="AMI" class="btn green col l9"></td>
-                                        <?php
-                                    }
-                                    else if (is_array($listBlockFriend) && in_array($user->id, $listBlockFriend))
-                                    {
-                                        ?>
-                                        <td><form method="POST" action="#" class="col l1 releaseFriend"><input hidden value=<?= $user->id ?> name="friend"><input type="submit" name="releaseFriend" value="DEBLOQUER" class="btn red accent-4"></form></td>
-                                        <?php
-                                    }
-                                    else if (is_array($listFriendBlock) && in_array($user->id, $listFriendBlock))
-                                    {
-                                        ?>
-                                        <td></td>
-                                        <?php
-                                    }
-                                    else
-                                    {
-                                        ?>
-                                        <td><form method="POST" action="#" class="col l1 addFriend"><input hidden value=<?= $user->id ?> name="friend"><input type="submit" name="addFriend" value="Ajouter" class="btn"></form></td>
-                                                <?php
-                                            }
-                                        }
-                                        ?>
-                            </tr>
-                            <?php
-                        }
+                        $country = $user->country;
+                        $region = $user->region;
+                        ?>
+                        <div class="grey row col offset-l4 l4 s12 localisation"><h3>Pays: <?= $country ?></h3>
+                            <?php if ($region != '')
+                            {
+                                ?>
+                                <h3>Region: <?= $region ?></h3> 
+                        <?php } ?>
+                        </div>
+                        <?php
                     }
                     ?>
-                </tbody>
-            </table>
+                    <div class="white row col offset-l4 l4 s12 profileUser">
+                        <div class="col l2 s5">
+                            <img class="avatarUser" src="<?= $user->avatar == '' ? 'media/profile/default/imagepardefaut.jpeg' : 'media/' . $user->id . '/profile/' . $user->avatar; ?>" width="100" height="120" alt="<?= $user->username ?>"/>
+                            <p class="white-text status <?= $user->log == 0 ? 'grey' : 'green' ?>"><?= $user->log == 0 ? 'Déconnecté' : 'Connecté' ?></p>
+                        </div>
+                        <div class="row col offset-l3 l3 s5 username">
+                            <h4><?= $user->username ?></h4>
+                        </div>
+                        <div class="row col offset-l2 l8 s7 buttonUser">
+                            <a class="btn black col l3 s12" href="profilFriend.php?idFriend=<?= $user->id ?>">PROFIL</a>
+                            <?php
+                            /*
+                             * On vérifie si l'utilisateur existe dans l'un des tableaux récupérer dans le controller
+                             * Pour personnaliser le bouton en fonction des relations récupérer dans l'attribut id de l'objet user avec l'utilisateur connecté
+                             */
+                            if ($relationship->idTransmitter != 0)
+                            {
+                                if (in_array($user->id, $listFriendAskSend))
+                                {
+                                    ?>
+                                    <input type="input" disabled class="btn white-text col offset-l1 l5 s12" value="En Attente">
+                                    <?php
+                                }
+                                else if (in_array($user->id, $listFriend))
+                                {
+                                    ?>
+                                    <input type="input" class="btn green col offset-l1 l5 s12"  value="AMI">
+                                    <?php
+                                }
+                                else if (is_array($listBlockFriend) && in_array($user->id, $listBlockFriend))
+                                {
+                                    ?>
+                                    <form method="POST" action="#" class="col offset-l1 l5 s12 addFriend"><input hidden value=<?= $user->id ?> name="friend"><input type="submit" name="releaseFriend" value="DEBLOQUER" class="btn red accent-4 col l12 s12"></form>
+                                    <?php
+                                }
+                                else if (is_array($listFriendBlock) && in_array($user->id, $listFriendBlock))
+                                {
+                                }
+                                else
+                                {
+                                    ?>
+                                    <form method="POST" action="#" class="col offset-l1 l5 s12 addFriend"><input hidden value=<?= $user->id ?> name="friend"><input type="submit" name="addFriend" value="Ajouter" class="btn blue col l12 s12"></form>
+                                        <?php
+                                    }
+                                }
+                                ?>
+                        </div>
+                    </div>
+                    <?php
+                }
+            }
+            ?>
         </div>
         <?php
     }
     else
     {
         ?>
-        <p>Aucun utilisateur trouvé</p>
+        <h3>Aucun utilisateur trouvé</h3>
         <?php
     }
 }

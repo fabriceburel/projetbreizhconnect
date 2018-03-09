@@ -8,22 +8,29 @@ include 'controllers/headerController.php';
 include 'controllers/communityController.php';
 if ($FriendUsers->id != 0)
 {
-include 'header.php';
+    include 'header.php';
     ?>
-    <div>
+    <div class="container">
         <?php
         if (!empty($waitFriendList))
         {
+            ?>
+            <div class="row">
+                <h3 id="waitAddFriend">Vos demandes d'amis en attente</h3>
+            </div>
+            <?php
             foreach ($waitFriendList AS $waitFriend)
             {
                 ?>
                 <div class="row">
                     <form method="POST" action="#">
-                        <p class="col l2"><?= $waitFriend->username ?></p>
-                        <input type="hidden" hidden value="<?= $waitFriend->id ?>" name="idNewFriend">
-                        <input type="submit" name="accept" value="Accepter" class="btn col l2 green darken-4 waves-effect">
-                        <input type="submit" name="deny" value="Refuser" class="btn col l2 orange darken-4 waves-effect">
-                        <input type="submit" name="block" value="Bloquer" class="btn col l2 red accent-4 waves-effect">
+                        <p class="col s4 m4 offset-l5 l2"><?= $waitFriend->username ?></p>
+                        <div class="row col s8 m5 l12">
+                            <input type="hidden" hidden value="<?= $waitFriend->id ?>" name="idNewFriend">
+                            <input type="submit" name="accept" value="Accepter" class="btn col s12 l3 green darken-4 waves-effect">
+                            <input type="submit" name="deny" value="Refuser" class="btn col s12 offset-l1 l3 orange darken-4 waves-effect">
+                            <input type="submit" name="block" value="Bloquer" class="btn col s12 offset-l1 l3 red accent-4 waves-effect">
+                        </div>
                     </form> 
                 </div>
                 <?php
@@ -33,7 +40,7 @@ include 'header.php';
         {
             ?>
             <p>Pas de demande d'ajout en attente</p>
-        <?php } ?>
+    <?php } ?>
     </div>
     <?php
     if (!empty($friendList))

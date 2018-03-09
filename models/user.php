@@ -180,10 +180,10 @@ class users extends dataBase {
     {
         $resultRequest = array();
         //cette requête permet de rechercher une personne en fonction de son pays et/ou de sa région(optionnel) et de tout ou une partie de son pseudo (optionnel)
-        $query = 'SELECT `' . self::PREFIX . 'user`.`firstname`, `' . self::PREFIX . 'user`.`lastname`, `' . self::PREFIX . 'user`.`id`, `' . self::PREFIX . 'user`.`username`, `' . self::PREFIX . 'country`.`country`, `' . self::PREFIX . 'region`.`region` FROM `' . self::PREFIX . 'user` INNER JOIN `' . self::PREFIX . 'country` ON `' . self::PREFIX . 'user`.`idCountry` = `' . self::PREFIX . 'country`.`id` LEFT JOIN `' . self::PREFIX . 'region` ON `' . self::PREFIX . 'user`.`idRegion` = `' . self::PREFIX . 'region`.`id` WHERE `' . self::PREFIX . 'user`.`idCountry` = :country AND (CASE WHEN :region = 100 THEN `' . self::PREFIX . 'user`.`idRegion` IS NOT NULL WHEN :region < 100 THEN `' . self::PREFIX . 'user`.`idRegion` = :region ELSE `' . self::PREFIX . 'user`.`idRegion` IS NULL END) AND `' . self::PREFIX . 'user`.`username` LIKE :username ORDER BY `' . self::PREFIX . 'user`.`username`';
+        $query = 'SELECT `' . self::PREFIX . 'user`.`firstname`, `' . self::PREFIX . 'user`.`lastname`, `' . self::PREFIX . 'user`.`id`, `' . self::PREFIX . 'user`.`username`, `' . self::PREFIX . 'user`.`avatar`, `' . self::PREFIX . 'user`.`log`, `' . self::PREFIX . 'country`.`country`, `' . self::PREFIX . 'region`.`region` FROM `' . self::PREFIX . 'user` INNER JOIN `' . self::PREFIX . 'country` ON `' . self::PREFIX . 'user`.`idCountry` = `' . self::PREFIX . 'country`.`id` LEFT JOIN `' . self::PREFIX . 'region` ON `' . self::PREFIX . 'user`.`idRegion` = `' . self::PREFIX . 'region`.`id` WHERE (CASE WHEN :country = 10000 THEN `' . self::PREFIX . 'user`.`idCountry` IS NOT NULL WHEN :country < 10000 THEN `' . self::PREFIX . 'user`.`idCountry` = :country END) AND (CASE WHEN :region = 10000 THEN (`' . self::PREFIX . 'user`.`idRegion` IS NOT NULL OR `' . self::PREFIX . 'user`.`idRegion` IS NULL) WHEN :region = 9000 THEN `' . self::PREFIX . 'user`.`idRegion` IS NOT NULL WHEN :region < 9000 THEN `' . self::PREFIX . 'user`.`idRegion` = :region ELSE `' . self::PREFIX . 'user`.`idRegion` IS NULL END) AND `' . self::PREFIX . 'user`.`username` LIKE :username ORDER BY (CASE WHEN `pklds_user`.`idRegion` IS NOT NULL THEN `pklds_user`.`idRegion` ELSE`pklds_user`.`idCountry` END), `' . self::PREFIX . 'user`.`log` DESC';
         $responseRequest = $this->db->prepare($query);
-        $responseRequest->bindValue(':country', $this->country, PDO::PARAM_INT);
-        $responseRequest->bindValue(':region', $this->region, PDO::PARAM_INT);
+        $responseRequest->bindValue(':country', $this->idCountry, PDO::PARAM_INT);
+        $responseRequest->bindValue(':region', $this->idRegion, PDO::PARAM_INT);
         $responseRequest->bindValue(':username', $this->username . '%', PDO::PARAM_STR);
         if ($responseRequest->execute())
         {
@@ -214,7 +214,7 @@ class users extends dataBase {
     public function getListMyFriend()
     {
         $resultRequest = array();
-        $query = 'SELECT `' . self::PREFIX . 'user`.`username`, `' . self::PREFIX . 'user`.`id`,  `' . self::PREFIX . 'user`.`avatar`, `' . self::PREFIX . 'country`.`country`, `' . self::PREFIX . 'region`.`region` FROM `' . self::PREFIX . 'user` INNER JOIN `' . self::PREFIX . 'relationship` ON `' . self::PREFIX . 'user`.id = `' . self::PREFIX . 'relationship`.`idReceiver` INNER JOIN `' . self::PREFIX . 'country` ON `' . self::PREFIX . 'country`.`id` = `' . self::PREFIX . 'user`.`idCountry` LEFT JOIN `' . self::PREFIX . 'region` ON `' . self::PREFIX . 'region`.`id` = `' . self::PREFIX . 'user`.`idRegion` WHERE `' . self::PREFIX . 'relationship`.`idTransmitter` = :id AND `' . self::PREFIX . 'relationship`.`acceptRelation` = 1 AND `' . self::PREFIX . 'relationship`.`block` = 1';
+        $query = 'SELECT `' . self::PREFIX . 'user`.`username`, `' . self::PREFIX . 'user`.`id`,  `' . self::PREFIX . 'user`.`avatar`,  `' . self::PREFIX . 'user`.`log`, `' . self::PREFIX . 'country`.`country`, `' . self::PREFIX . 'region`.`region` FROM `' . self::PREFIX . 'user` INNER JOIN `' . self::PREFIX . 'relationship` ON `' . self::PREFIX . 'user`.id = `' . self::PREFIX . 'relationship`.`idReceiver` INNER JOIN `' . self::PREFIX . 'country` ON `' . self::PREFIX . 'country`.`id` = `' . self::PREFIX . 'user`.`idCountry` LEFT JOIN `' . self::PREFIX . 'region` ON `' . self::PREFIX . 'region`.`id` = `' . self::PREFIX . 'user`.`idRegion` WHERE `' . self::PREFIX . 'relationship`.`idTransmitter` = :id AND `' . self::PREFIX . 'relationship`.`acceptRelation` = 1 AND `' . self::PREFIX . 'relationship`.`block` = 1';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':id', $this->id, PDO::PARAM_INT);
         if ($responseRequest->execute())
@@ -239,11 +239,11 @@ class users extends dataBase {
             $responseRequestDeleterelation->bindValue(':id', $this->id, PDO::PARAM_INT);
             $responseRequestDeleterelation->execute();
             $queryDeleteUser = 'DELETE FROM `' . self::PREFIX . 'user` WHERE `' . self::PREFIX . 'user`.`id` = :id';
-            $responseRequestDeleteUser  = $this->db->prepare($queryDeleteUser);
+            $responseRequestDeleteUser = $this->db->prepare($queryDeleteUser);
             $responseRequestDeleteUser->bindValue(':id', $this->id, PDO::PARAM_INT);
             $responseRequestDeleteUser->execute();
             //On valide la transaction.
-             $resultDeleteUser = true;
+            $resultDeleteUser = true;
             $this->db->commit();
         } catch (Exception $ex) {
             //Si une erreur survient, on annule les changements.

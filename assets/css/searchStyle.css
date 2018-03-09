@@ -1,0 +1,42 @@
+.localisation h3{
+    font-size: 1.8em;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+}
+.username h4{
+    font-size: 1.5em;
+    margin-bottom: 0.4em;
+    margin-top: 0.4em;
+}
+.profileUser{
+    height: 120px;
+}
+.status{
+    position: relative;
+    z-index: 1;
+    margin-top: -24px;
+    width: 100px;
+}
+form.searchUser .textError{
+    background-color: yellow;
+}
+div .profileUser {
+    padding-left: 0;
+}
+div.white.row.col.offset-l4.l4.s12.profileUser{
+    padding-left: 0;
+}
+.profileUser div.col.l2.s5{
+    padding-left: 0;
+}
+@media all and (max-device-width: 634px){
+    .localisation{
+        margin-bottom: 2em;
+    }
+    form.searchUser{
+        padding-top: 2em;
+    }
+    form.searchUser .textError{
+        background-color: yellow;
+    }
+}

@@ -23,7 +23,7 @@ include_once 'header.php';
       <div class="row">
         <div class="col offset-l2 l8 s12 center-block">
           <!-- Création du formulaire d'inscription-->
-          <form action="#" method="POST" enctype="multipart/form-data">            
+          <form action="#" method="POST" enctype="multipart/form-data" class="subscribe">            
             <!-- Création de l'emplacement du nom -->
             <div class="input-field l4">
               <i class="material-icons prefix">account_circle</i>
@@ -33,29 +33,29 @@ include_once 'header.php';
             <!-- Création de l'emplacement du prénom -->
             <div class="input-field l4">
               <i class="material-icons prefix">account_circle</i>
-              <input type="text" name="firstname" class="grey darken-4 white-text" id="firstname" required value="<?= $NewUsers->firstname; ?>">
+              <input type="text" name="firstname" class="grey darken-4 white-text" id="firstname" required value="<?= $NewUsers->firstname ?>">
               <label for="firstname">Prénom : <p class="textError"><?= $textFirstname; ?></p></label>
             </div>
             <!-- Création de l'emplacement Pseudo -->
             <div class="input-field l4">
               <i class="material-icons prefix">account_circle</i>
-              <input type="text" name="username" class="grey darken-4 white-text" id="username" required value="<?= $NewUsers->username; ?>">
+              <input type="text" name="username" class="grey darken-4 white-text" id="username" required value="<?= $NewUsers->username ?>">
               <label for="username">Choisissez un pseudo : <p class="textError"><?= $textUsername; ?></p></label>
             </div>
             <!-- Création de l'emplacement Date de naissance -->
             <div class="input-field l4">
               <i class="material-icons prefix">perm_contact_calendar</i>
-              <input type="text" name="birthdate" class="datepicker grey darken-4 white-text" id="birthdate" required value="<?= $NewUsers->birthdateFrench; ?>">
+              <input type="text" name="birthdate" class="datepicker grey darken-4 white-text" id="birthdate" required value="<?= $NewUsers->birthdateFrench ?>">
               <label for="birthdate">Votre Date de naissance: <p class="textError"><?= $textBirthday; ?></p></label>
             </div>
             <!-- Création de l'emplacement du mail -->
             <div class="input-field l4">
               <i class="material-icons prefix">contact_mail</i>
-              <input type="email" name="mail" class="grey darken-4 white-text" id="mail" required value="<?= $NewUsers->mail; ?>">
-              <label for="email">Votre Email : <p class="textError"><?= $textMail; ?></p></label>
+              <input type="email" name="mail" class="grey darken-4 white-text" id="mail" required value="<?= $NewUsers->mail ?>">
+              <label for="email">Votre Email : <p class="textError"><?= $textMail ?></p></label>
             </div>
             <!-- création de la liste deroulante permettant de choisir son pays -->
-            <div class="input-field l4">
+            <div class="input-field s2 l4">
               <i class="fa fa-globe prefix" aria-hidden="true"></i>
               <select name="country"  class="grey darken-4 white-text country" required>
                 <option>Sélectionner votre pays</option>

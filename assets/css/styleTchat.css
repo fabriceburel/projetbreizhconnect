@@ -1,17 +1,53 @@
 #listMessage{
-    height: 43em; 
+    height: 200%; 
     overflow:auto;
-    padding:5px;
     bottom: 0;
+}
+div#messengerFriend.row{
+    margin-bottom: 0;
 }
 form#sendMessage{
     padding: 5px;
-    height: 7em;
-}
-#listFriend{
-    min-height: 50em;
-    overflow:auto;
+    height: 8em;
 }
 friend{
     border: 1px solid black;
+}
+.messageUser{
+    background-color: green;
+}
+#writeMessage{
+    height: 4em;
+}
+#listFriend{
+    background-color: #101010;
+    overflow: auto;
+}
+p.userHour{
+    font-size: 1.2em;
+    font-weight: bold;
+    min-width: 5em;
+}
+.message{
+    font-weight: normal;
+}
+#listMessage div{    
+    border-radius: 20px;
+}
+ul#userFriendList a{
+    background-color: #101010;
+    color: white;
+}
+ul#userFriendList{
+    background-color: #101010;
+    color: white;
+}
+ul#userFriendList a:focus, ul#userFriendList a:hover{
+    background-color: white;
+    color: #101010;
+}
+@media screen and (min-width: 600px) and (max-width: 992px){
+    #messenger{
+        margin-left: -160px;
+    }
 }

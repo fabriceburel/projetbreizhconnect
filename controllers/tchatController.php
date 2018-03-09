@@ -1,5 +1,5 @@
 <?php
-
+$currentPage='tchat';
 //on instancie la class message
 //$newMessage = new message();
 //On instancie la class relationship
@@ -13,7 +13,7 @@ if (isset($_POST['ajaxSendMessage']))
     include_once '../models/relationship.php';
     include_once '../models/message.php';
     include_once '../controllers/headerController.php';
-    $newMessage = new relationship();
+    $newMessage = new message();
     //on vérifie que le champs texte n'est pas vide et que la valeur de friendRelation est bien un chiffre
     if (!empty($_POST['idReceiver']) && intval($_POST['idReceiver']) && !empty($_POST['idTransmitter']) && intval($_POST['idTransmitter']) && !empty($_POST['newMessage']))
     {
@@ -22,6 +22,8 @@ if (isset($_POST['ajaxSendMessage']))
         $newMessage->idTransmitter = intval($_POST['idTransmitter']);
         //On récupère les messages dans un format json
         echo json_encode($newMessage->newMessage());
+    }else{
+        echo 'erreur';
     }
 }
 else if (isset($_POST['ajaxActualise']))
@@ -31,19 +33,21 @@ else if (isset($_POST['ajaxActualise']))
     include_once '../models/relationship.php';
     include_once '../models/message.php';
     include_once '../controllers/headerController.php';
-    $newMessage = new relationship();
+    $newMessage = new message();
     if (!empty($_POST['idReceiver']) && intval($_POST['idReceiver']) && !empty($_POST['idTransmitter']) && intval($_POST['idTransmitter']))
     {
         $newMessage->idReceiver = intval($_POST['idReceiver']);
         $newMessage->idTransmitter = intval($_POST['idTransmitter']);
         //On récupère les messages dans un format json
         echo json_encode($newMessage->readMessage());
+    }else{
+        echo false;
     }
 }
 else
 {
     $FriendUsers = new users();
-    $newMessage = new relationship();
+    $newMessage = new message();
     if (!empty($_SESSION['id']) && intval($_SESSION['id']))
     {
         $FriendUsers->id = intval($_SESSION['id']);

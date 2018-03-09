@@ -1,5 +1,5 @@
 <?php
-
+$currentPage='community';
 $FriendUsers = new users();
 if (isset($_SESSION['id']))
 {

@@ -20,7 +20,7 @@ if ($checklogin)
         <div class="row">
             <div class="col offset-l2 l8 s12 center-block">
                 <!-- Création du formulaire d'inscription-->
-                <form action="connexion.php" method="POST">            
+                <form action="connexion.php" method="POST" class="connexion">            
                     <!-- Création de l'emplacement Pseudo -->
                     <div class="input-field l4">
                         <i class="material-icons prefix">account_circle</i>
@@ -39,7 +39,7 @@ if ($checklogin)
                     </div>
                     <!-- Ajout du bouton pour annuler l'inscritpion -->
                     <div class="input-field l4 center-align">
-                        <button aria-hidden="true" class="btn waves-effect waves-dark grey darken-4"><a href="index.php">Annuler ma connexion</a></button>
+                        <button aria-hidden="true" class="btn waves-effect waves-dark grey darken-4"><a class="white-text" href="index.php">Annuler ma connexion</a></button>
                     </div>
                 </form>
             </div>
