@@ -1,39 +1,46 @@
 <?php include_once 'controllers/buttonLogOffController.php'; ?>
 <div  class="row" id="heading">
     <!--En tete du site -->
-    <div class="col offset-l3  l5"><h1>BZHConnect</h1></div>
-    <div class="col offset-l1 l3 row" id="button-header">
-
-        <h2><a href="#modalConnexion" data-toggle="modal" class="col l12 waves-effect waves-light btn modal-trigger connexion">CONNEXION</a></h2>
+    <div class="col s12 m6 offset-l3 l5"><h1>BZHConnect</h1></div>
+    <div class="col s12 m6 offset-l1 l3 row" id="button-header">
+        <h2><a href="#modalConnexion" data-toggle="modal" class="col s6 m12 l12 waves-effect waves-light btn modal-trigger connexion">CONNEXION</a></h2>
         <!-- Modal Structure -->
         <div id="modalConnexion" class="modal">
             <div class="modal-content">
                 <h3>CONNEXION</h3>
             </div>
-            <form action="connexion.php" method="POST"  class="connexion">            
+            <form action="connexion.php" method="POST"  class="connexion col s12 l12 center-align">            
                 <!-- Création de l'emplacement Pseudo -->
-                <div class="input-field l4">
-                    <i class="material-icons prefix">account_circle</i>
-                    <input type="text" name="username" class="grey darken-4 white-text" id="username" value="<?= $users->username; ?>">
-                    <label for="username">Entrez votre pseudo : </label>
+                <div class="col m8">
+                    <div class="input-field l4 modalConnexion">
+                        <i class="material-icons prefix hide-on-small-only">account_circle</i>
+                        <input type="text" name="username" class="grey darken-4 white-text" id="username" value="<?= $users->username; ?>">
+                        <label for="username">Entrez votre pseudo : </label>
+                    </div>
                 </div>
                 <!-- Création de l'emplacement du mdp -->
-                <div class="input-field l4">
-                    <i class="material-icons prefix">vpn_key</i>
-                    <input type="password" name="password" class="grey darken-4 white-text" id="password" value="<?= $users->password ?>">
-                    <label for="password">Mot de passe : </label>
-                </div>        
+                <div class="col m8">
+                    <div class="input-field l4 modalConnexion">
+                        <i class="material-icons prefix hide-on-small-only">vpn_key</i>
+                        <input type="password" name="password" class="grey darken-4 white-text" id="password" value="<?= $users->password ?>">
+                        <label for="password">Mot de passe : </label>
+                    </div>
+                </div>
                 <!-- Ajout du bouton pour envoyer la requête -->
-                <div class="input-field l4 center-align">  
-                    <button name="subscribe" class="btn btn-large waves-effect waves-light grey darken-4" id="submitConnexion">Me connecter<i class="material-icons right">send</i></button>
+                <div class="col m8">
+                    <div class="input-field center-align">  
+                        <button name="subscribe" class="btn btn-large waves-effect waves-light grey darken-4" id="submitConnexion">Connecter<i class="material-icons right hide-on-small-only">send</i></button>
+                    </div>
                 </div>
                 <!-- Ajout du bouton pour annuler l'inscritpion -->
-                <div class="input-field l4 center-align">
-                    <button name="undo" aria-hidden="true" class="btn waves-effect waves-dark grey darken-4"><a class="white-text" href="index.php">Annuler ma connexion</a></button>
+                <div class="col m8 ">
+                    <div class="input-field l4 center-block">
+                        <button name="undo" aria-hidden="true" class="btn waves-effect waves-dark grey darken-4"><a class="white-text" href="index.php">Annuler</a></button>
+                    </div>
                 </div>
             </form>
         </div>
-        <h2><a href="subscribe.php" class="col l12 waves-effect waves-light btn inscription valign-wrapper">INSCRIPTION</a></h2>
+        <h2><a href="subscribe.php" class="col s6 m12 l12 waves-effect waves-light btn inscription valign-wrapper">INSCRIPTION</a></h2>
     </div>
 </div>
 

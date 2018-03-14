@@ -18,7 +18,7 @@ include_once 'header.php';
             <!-- Création de l'emplacement Pseudo -->
             <div class="input-field l4">
                 <i class="material-icons prefix">account_circle</i>
-                <input type="text" name="username" class="grey darken-4 white-text" id="username" value="<?= $FriendUsers->username; ?>">
+                <input type="text" name="username" class="white-text" id="username" value="<?= $FriendUsers->username; ?>">
                 <label for="username">Pseudo de la personne (optionnel) : </label>
             </div>            
             <!-- création de la liste deroulante permettant de choisir son pays -->
@@ -26,7 +26,7 @@ include_once 'header.php';
                 <div class="col s12">
                     <div class="input-field">
                         <i class="fa fa-globe prefix" aria-hidden="true"></i>
-                        <select name="country"  class="grey darken-4 white-text country" required>
+                        <select name="country"  class="white-text country" required>
                             <option>Sélectionner le pays</option>
                             <?php
                             foreach ($countryList as $country)
@@ -43,7 +43,7 @@ include_once 'header.php';
             </div>
             <div class="input-field region">
                 <i class="fa fa-globe prefix" aria-hidden="true"></i>
-                <select name="region" class="grey darken-4 white-text">
+                <select name="region" class="white-text">
                     <option>Sélectionnez la région</option>
                     <?php
                     foreach ($regionList as $region)

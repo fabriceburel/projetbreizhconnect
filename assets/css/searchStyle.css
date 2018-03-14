@@ -15,7 +15,7 @@
     position: relative;
     z-index: 1;
     margin-top: -24px;
-    width: 100px;
+    width: 100%;
 }
 form.searchUser .textError{
     background-color: yellow;
@@ -28,6 +28,10 @@ div.white.row.col.offset-l4.l4.s12.profileUser{
 }
 .profileUser div.col.l2.s5{
     padding-left: 0;
+}
+avatarUser{
+    max-width: 30px;
+    max-height: 30px;
 }
 @media all and (max-device-width: 634px){
     .localisation{

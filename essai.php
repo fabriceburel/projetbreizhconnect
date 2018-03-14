@@ -1,166 +1,101 @@
-<html>
-<head>
-	<title>Media WebRTC Demo</title>
-	<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+<?php
+include_once 'models/dataBase.php';
+include_once 'models/user.php';
+include_once 'models/relationship.php';
+include_once 'models/message.php';
+include_once 'controllers/headerController.php';
+include_once 'controllers/tchatController.php';
+include_once 'header.php';
+?>
+<link rel="stylesheet" href="assets/css/styleTchat.css">
+<div class="row" id="messengerFriend">
+    <div class="col s12 m8 l8 white" id="messenger">
+        <?php
+        if ($newMessage->idReceiver != 0)
+        {
+            ?>        
+            <div class="messenger" id="listMessage">
+                <?php
+                //on vérifie qu'on appel pas la méthode ajax
+                if (!$ajax)
+                {
+                    $anchors = 0;
+                    $date = NULL;
+                    foreach ($readMessages as $message)
+                    {
+                        $anchors++;
+                        $checkDate = $message->date;
+                        if ($checkDate == $message->today)
+                        {
+                            $checkDate = 'Ajourd\'hui';
+                        }
+                        if ($checkDate != $date | $date == NULL)
+                        {
+                            $date = $checkDate;
+                            ?>
+                            <h5 class="col s12 center-align"><strong><?= $date ?></strong></h5>
+                            <?php
+                        }
+                        if ($message->id == $newMessage->idTransmitter)
+                        {
+                            ?>
+                            <div class="col offset-s2 s9 cyan lighten-3 row">
+                                <p class="userHour"><?= $message->hour ?> - Vous : <span class="message" id="<?= $anchors ?>"> <?= $message->content ?></span></p>
+                                <?php
+                            }
+                            else
+                            {
+                                ?>
+                                <div class="col s9 yellow lighten-1 row">
+                                    <p class="userHour"><?= $message->hour ?> - <?= $message->username ?> : <span class="message" id="<?= $anchors ?>"><?= $message->content ?></span></p>
+                                <?php } ?>
+                            </div>
+                            <?php
+                        }
+                    }
+                    ?>
+                </div>
+                <div class="spaceWrite">
+                    <form action="#" method="POST" id="sendMessage">
+                        <input type="hidden" name="friendRelation" userId="<?= $newMessage->idTransmitter ?>" value="<?= $newMessage->idReceiver ?>">
+                        <input type="texte" name="newMessage" id="writeMessage">
+                        <input type="submit" value="Envoyer" class="btn black" id="newMessage">        
+                    </form>    
+                </div>
+                <?php
+            }
+            else
+            {
+                ?>
+                <p>Sélectionner une personne pour commencer à échanger</p>
+            <?php }
+            ?>
+        </div>
+        <div class="col s4 m4 l4 white hide-on-small-only" id="listFriend">
+            <?php
+            foreach ($friendList AS $user)
+            {
+                ?>
+                <div class="white row col s12 profileUser">
+                    <div class="col s5 m2 l2">
+                        <img class="avatarUser" src="<?= $user->avatar == '' ? 'media/profile/default/imagepardefaut.jpeg' : 'media/' . $user->id . '/profile/' . $user->avatar; ?>" width="100" height="100" alt="<?= $user->username ?>"/>
+                        <p class="white-text status <?= $user->log == 0 ? 'grey' : 'green' ?>"><?= $user->log == 0 ? 'Déconnecté' : 'Connecté' ?></p>
+                    </div>
+                    <div class="row col offset-l3 l3 s5 username">
+                        <h4><?= $user->username ?> de : <span class="country"><?= $user->country ?></span></h4>
+                    </div>
+                    <div class="row col offset-l2 l8 s7 buttonUser">
+                        <a class="btn black col l3 s12" href="profilFriend.php?idFriend=<?= $user->id ?>">PROFIL</a>
+                        <a class="btn col offset-m2 green" href="#?friend=<?= $user->id ?>">Echanger</a>
+                    </div>
+                </div>
+            <?php }
+            ?>
+        </div>
+        <iframe  src="webcam.php" width="300" height="300">
 
-	<style>#video,#otherPeer { width: 300px;}</style>
-</head>
-<body>
-<!-- affichage des video, la notre et celle de notre pair. -->
-<video id="video" autoplay height="200px" width="200px"></video>
-<video id="otherPeer" autoplay "400px" width="200px"></video>
-
-<script>
-//gestion de la base de donné par sur le firebaseio
-var dbRef = new Firebase("https://breizhconnection-35.firebaseio.com");
-var roomRef = dbRef.child("rooms");
-
-// création d'alias
-var PeerConnection = window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-var SessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
-var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
-navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
-
-// generation d'un chiffre d'identification unique-ish
-function id () {
-	return (Math.random() * 10000 + 10000 | 0).toString();
-}
-
-// un wrapper sympa pour envoyer des données à FireBase
-function send (room, key, data) {
-	roomRef.child(room).child(key).set(data);
-}
-
-// fonction wrapper pour recevoir des données de FireBase
-function recv (room, type, cb) {
-	roomRef.child(room).child(type).on("value", function (snapshot, key) {
-		var data = snapshot.val();
-		if (data) { cb(data); }
-	});
-}
-
-// gestionnaire d'erreur générique
-function errorHandler (err) {
-	console.error(err);
-}
-
-// déterminer quel type d'homologue nous sommes,
-// offreur ou répondeur.
-var ROOM = location.hash.substr(1);
-var type = "answerer";
-var otherType = "offerer";
-
-// pas de numéro de chambre spécifié, alors créez un
-// ce qui fait de nous l'offreur
-if (!ROOM) {
-	ROOM = id();
-	type = "offerer";
-	otherType = "answerer";
-
-	document.write("<a href='#"+ROOM+"'>copier le lien pour l'envoyer à la personne avec qui vous souhaitez converser</a>");
-}
-
-// générer un numéro de chambre unique-ish
-var ME = id();
-
-// options pour le PeerConnection détermination des serveurs stun et turn à privilégié
-var server = {
-	iceServers: [
-		{url: "stun:23.21.150.121"},
-		{url: "stun:stun.l.google.com:19302"},
-		//{url: "turn:numb.viagenie.ca", credential: "webrtcdemo", username: "louis%40mozilla.com"}
-	]
-};
-
-var options = {
-	optional: [
-		{DtlsSrtpKeyAgreement: true}
-	]
-}
-
-// création du PeerConnection
-var pc = new PeerConnection(server, options);
-pc.onicecandidate = function (e) {
-	// prendre le premier candidat qui n'est pas null
-	if (!e.candidate) { return; }
-	pc.onicecandidate = null;
-
-	// demander à l'autre candidat de l'ICE
-	recv(ROOM, "candidate:" + otherType, function (candidate) {
-		pc.addIceCandidate(new IceCandidate(JSON.parse(candidate)));
-	});
-	// envoyer notre candidat ICE
-	send(ROOM, "candidate:"+type, JSON.stringify(e.candidate));
-};
-// attraper les éléments vidéo du document
-var video = document.getElementById("video");
-var video2 = document.getElementById("otherPeer");
-
-// obtenir les médias de l'utilisateur, dans ce cas juste la vidéo
-navigator.getUserMedia({video: true}, function (stream) {
-	// définissez l'une des vidéos src dans le flux
-	video.src = URL.createObjectURL(stream);
-
-	// ajouter le stream à la PeerConnection
-	pc.addStream(stream);
-
-	// maintenant nous pouvons nous connecter à l'autre pair
-	connect();
-}, errorHandler);
-
-// lorsque nous obtenons le stream de l'autre peer, l'ajouter à la seconde
-// élément vidéo.
-pc.onaddstream = function (e) {
-	video2.src = URL.createObjectURL(e.stream);
-};
-
-// contraintes sur l'offre SDP. Plus facile à régler
-// à vrai sauf si vous ne souhaitez pas recevoir de contenu audio
-// ou vidéo
-var constraints = {
-	mandatory: {
-        OfferToReceiveAudio: true,
-        OfferToReceiveVideo: true
-    }
-};
-
-// Démmarrage de la connexion
-function connect () {
-	if (type === "offerer") {
-		// create the offer SDP
-		pc.createOffer(function (offer) {
-			pc.setLocalDescription(offer);
-
-			// envoyer l'offre SDP à FireBase
-			send(ROOM, "offer", JSON.stringify(offer));
-
-			// attendre une réponse SDP de FireBase
-			recv(ROOM, "answer", function (answer) {
-				pc.setRemoteDescription(
-					new SessionDescription(JSON.parse(answer))
-				);
-			});
-		}, errorHandler, constraints);
-
-	} else {
-		// le répondeur doit attendre une offre avant
-    // Génération de la réponse SDP
-		recv(ROOM, "offer", function (offer) {
-			pc.setRemoteDescription(
-				new SessionDescription(JSON.parse(offer))
-			);
-
-			// maintenant nous pouvons générer notre réponse SDP
-			pc.createAnswer(function (answer) {
-				pc.setLocalDescription(answer);
-
-				// envoyez-le à FireBase
-				send(ROOM, "answer", JSON.stringify(answer));
-			}, errorHandler, constraints);
-		});
-	}
-}
-</script>
-
-</body>
-</html>
+        </iframe>
+    </div>
+    <?php
+    include 'footer.php';
+    ?>

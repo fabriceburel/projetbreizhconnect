@@ -75,7 +75,7 @@ nav ul a:hover{
     font-weight: bold;
     border: none;
     height: 4em;;
-    padding-top: 1em;
+    padding-top: 1.2em;
 }
 form.btn.logOut{
     color:black;
@@ -83,11 +83,11 @@ form.btn.logOut{
     font-weight: bold;
     border: none;
     height: 4em;;
-    padding: 0;
 }
-div.logOut{
+h2.logOut{
     padding:0;
-    font-size:1em;
+    font-size:1.2em;
+    font-weight: bold;
 }
 div.logOut input{
     height: 4em;
@@ -106,9 +106,9 @@ div.logOut input{
 .btn.inscription:hover, .btn-header:focus, form.logOut:hover{
     background-color: #BBB;
 }
-.btn-inscription .badge { 
-    color: #FFFFFF; 
-    background-color: #000000; 
+.btn-inscription .badge {
+    color: #FFFFFF;
+    background-color: #000000;
 }
 /*mise en forme du footer */
 #footer a{
@@ -136,7 +136,7 @@ div.logOut input{
 /*mise en forme des formulaires */
 form.subscribe, form.connexion, form.searchUser {
     background-color: white;
-    padding: 100px;
+    padding: 0 50px 50px 50px ;
 }
 
 label.active{
@@ -161,7 +161,7 @@ input.select-dropdown{
     color: white;
     font-weight: bold;
     font-size: 1.1em;
-    padding-left: 1em;
+    padding-left: 2em;
 }
 /* label focus color */
 .input-field input[type=text]:not(.browser-default):focus:not([readonly]) + label,
@@ -171,7 +171,7 @@ input.select-dropdown{
 {
     color: #000;
     font-size: 1.5em;
-    margin-top: -1.1em;
+    margin-top: -1.5em;
 }
 /* label underline focus color */
 .input-field input[type=text]:focus{
@@ -194,6 +194,8 @@ input.select-dropdown{
 }
 .input-field .prefix ~ input{
     padding-left: 1.5em;
+    background-color: #333;
+    font-weight: bold;
 }
 .input-field{
     margin-top: 2rem;
@@ -206,9 +208,10 @@ input.select-dropdown{
     font-size: 1.5em;
 }
 .select-wrapper input.select-dropdown {
+    background-color: #333;
     position: relative;
     cursor: pointer;
-    background-color: transparent;
+    /* background-color: transparent; */
     border: none;
     border-bottom-width: large;
     border-bottom-style: none;
@@ -231,7 +234,7 @@ input.select-dropdown{
     color:white;
 }
 .dropdown-content{
-    background-color: black;
+    background-color: #333;
 }
 .dropdown-content li > span {
     color:white;
@@ -252,7 +255,7 @@ input.select-dropdown{
     font-weight: bold;
 }
 p.textError{
-    font-size: 0.5em;
+    font-size: 0.8em;
     color: red;
     margin-top: -0.7em;
 }
@@ -267,19 +270,22 @@ form.col.addFriend{
 table{
     margin-bottom: 6em;
 }
-@media all and (max-device-width: 634px){
+/*media query pour le format small */
+@media all and (max-device-width: 600px){
     .container{
-        width: 96%;
+        width: 100%;
     }
     #heading h1{
-        margin-right: 10%;
-        margin-left: 10%;
+        margin: 2%;
         padding: 5%;
         font-weight: bold;
-        font-size: 2.2em;
+        font-size: 2em;
     }
     h2{
-        font-size : 2em;
+        font-size: 1em;
+    }
+    h3{
+        font-size: 1.8em;
     }
     .input-field{
         padding-left: 0;
@@ -287,19 +293,20 @@ table{
     div.col.s12{
         padding: 0;
     }
+    /* mise en forme du formulaire inscription */
     form.subscribe, form.connexion, form.searchUser {
         padding: 0.4em;
     }
     .input-field .prefix ~ input {
         font-size: 0.9em;
-        width: 300px;
+        width: 200px;
     }
     .input-field .prefix ~ select {
         font-size: 0.9em;
-        
+
     }
     .input-field .prefix ~ label {
-        padding-left: 20px;
+        padding-left: 0;
         font-size: 0.9em;
     }
     .input-field input[type=text]:not(.browser-default):focus:not([readonly]) + label,
@@ -310,17 +317,32 @@ table{
         margin-left: 0;
         margin-bottom: 2em;
         padding-left: 0;
-        font-size: 1.2em; 
+        font-size: 1.2em;
         width: 400px;
     }
     .input-field .prefix ~ label.localisation{
-        margin-left: 0;
+        margin-left: 5px;
         margin-bottom: 2em;
         padding-left: 0;
-        font-size: 1em;        
+        font-size: 1em;
     }
-    .input-field .prefix ~ label.localisation p{     
+    .input-field .prefix ~ label.localisation p{
         font-size: 0.6em;
+    }
+    /* mise en forme de la fenetre modal de la connexion */
+    .modalConnexion #username, .modalConnexion #password{
+        margin-left: 0;
+    }
+    .modalConnexion #username + label, .modalConnexion #password + label{
+        margin-left: 1em;
+    }
+    .modal .modal-content{
+        padding:5px;
+    }
+    div#modalConnexion{
+        min-height: 450px;
+        min-width: 300px;
+        top:2%;
     }
 }
 

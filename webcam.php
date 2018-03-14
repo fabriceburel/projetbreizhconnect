@@ -1,183 +1,286 @@
+<!DOCTYPE html>
 <html>
     <head>
-        <title>Media WebRTC Demo</title>        
-        <style>#video,#otherPeer { width: 300px;}</style>
-        <script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+        <title>SimpleWebRTC Demo</title>
+        <link rel="stylesheet" type="text/css" href="//cloud.typography.com/7773252/764742/css/fonts.css" />
+        <link rel="stylesheet" href="css/style.min.css">
+        <link rel="icon" type="image/png" href="img/favicon.png">
+        <style>
+            .videoContainer {
+                position: relative;
+                width: 200px;
+                height: 150px;
+            }
+            .videoContainer video {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+            }
+            .volume {
+                position: absolute;
+                left: 15%;
+                width: 70%;
+                bottom: 5px;
+                height: 5px;
+                display: none;
+            }
+            .connectionstate {
+                position: absolute;
+                top: 0px;
+                width: 100%;
+                text-align: center;
+                color: #fff
+            }
+            #localScreenContainer {
+                display: none;
+            }
+        </style>
     </head>
     <body>
-        <video id="video" autoplay></video>
-        <video id="otherPeer" autoplay></video>
-        <script>
-            // get a reference to our FireBase database. You should create your own
-            // and replace the URL.
-            var dbRef = new Firebase("https://webrtcdemo.firebaseIO.com/");
-            var roomRef = dbRef.child("rooms");
+        <!-- création d'une room -->
+        <h3 id="title">Start a room</h3>
+        <form id="createRoom">
+            <input id="sessionInput"/>
+            <button disabled type="submit">Create it!</button>
+        </form>
+        <!-- partage d'écran
+        <p id="subTitle"></p>
+        <div>
+          <button id="screenShareButton"></button>
+          (https required for screensharing to work)
+        </div>-->        
+        <div class="videoContainer">
+            <video id="localVideo" height="300px" width="500" oncontextmenu="return false;"></video>
+            <!-- permet de mesurer le son venant de son micro -->
+            <meter id="localVolume" class="volume" min="-45" max="-20" high="-25" low="-40"></meter>
+        </div>
+        <div id="localScreenContainer" class="videoContainer">
+        </div>
+        <!-- affichage de la webcam de l'autre utilisateur -->
+        <div id="remotes"></div>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+        <script src="https://webrtc.github.io/adapter/adapter-4.2.2.js"></script>
+        <script src="https://simplewebrtc.com/latest-v3.js"></script>
+                <script>
+            // grab the room from the URL
+            var room = location.search && location.search.split('?')[1];
 
-            // shims!
-            var PeerConnection = window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-            var SessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
-            var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
-            navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
+            // create our webrtc connection
+            var webrtc = new SimpleWebRTC({
+                // the id/element dom element that will hold "our" video
+                localVideoEl: 'localVideo',
+                // the id/element dom element that will hold remote videos
+                remoteVideosEl: '',
+                // immediately ask for camera access
+                autoRequestMedia: true,
+                debug: false,
+                detectSpeakingEvents: true,
+                autoAdjustMic: false
+            });
 
-            // Generation d'un numéro alétoire qui permettra d'identifier la connexion pour les 2 utilisateurs, Celui ci sera généré lors de la demande
-            function idPeerConnexion() {
-                return (Math.random() * 10000 + 10000 | 0).toString();
-            }
+            // when it's ready, join if we got a room from the URL
+            webrtc.on('readyToCall', function () {
+                // you can name it anything
+                if (room)
+                    webrtc.joinRoom(room);
+            });
 
-            // a nice wrapper to send data to FireBase
-            function send(room, key, data) {
-                roomRef.child(room).child(key).set(data);
-            }
-            // wrapper function to receive data from FireBase
-            function recv(room, type, cb) {
-                roomRef.child(room).child(type).on("value", function (snapshot, key) {
-                    var data = snapshot.val();
-                    if (data) {
-                        cb(data);
-                    }
-                });
-            }
-            // generic error handler
-            function errorHandler(err) {
-                console.error(err);
-            }
-            // determine what type of peer we are,
-            // offerer or answerer.
-            var ROOM = location.hash.substr(1);
-            var type = "answerer";
-            var otherType = "offerer";
-            // no room number specified, so create one
-            // which makes us the offerer
-            if (!ROOM) {
-                ROOM = id();
-                type = "offerer";
-                otherType = "answerer";
-                //Création du lien à envoyer vers une autre personne
-                document.write("<a href='#" + ROOM + "'>Send link to other peer</a>");
-            }
-            // Génération du numéro aléatoire qui identifiera la connexion
-            var user1 = idPeerConnexion();
-            /* 
-             * Liste des serveur STUN et TURN pouvant être utiliser pour récupérer les adresses IP privé et le port utiliser par l'équipement de l'utilisateur, quand celui ci est situé derrière un pare-feu
-             * Et qu'il y a une translation d'adresse NAT
-             */            
-            var server = {
-                iceServers: [
-                    {url: 'stun:stun01.sipphone.com'},
-                    {url: 'stun:stun.ekiga.net'},
-                    {url: 'stun:stun.fwdnet.net'},
-                    {url: 'stun:stun.ideasip.com'},
-                    {url: 'stun:stun.iptel.org'},
-                    {url: 'stun:stun.rixtelecom.se'},
-                    {url: 'stun:stun.schlund.de'},
-                    {url: 'stun:stun.l.google.com:19302'},
-                    {url: 'stun:stun1.l.google.com:19302'},
-                    {url: 'stun:stun2.l.google.com:19302'},
-                    {url: 'stun:stun3.l.google.com:19302'},
-                    {url: 'stun:stun4.l.google.com:19302'},
-                    {url: 'stun:stunserver.org'},
-                    {url: 'stun:stun.softjoys.com'},
-                    {url: 'stun:stun.voiparound.com'},
-                    {url: 'stun:stun.voipbuster.com'},
-                    {url: 'stun:stun.voipstunt.com'},
-                    {url: 'stun:stun.voxgratia.org'},
-                    {url: 'stun:stun.xten.com'},
-                    {
-                        url: 'turn:numb.viagenie.ca',
-                        credential: 'muazkh',
-                        username: 'webrtc@live.com'
-                    },
-                    {
-                        url: 'turn:192.158.29.39:3478?transport=udp',
-                        credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-                        username: '28224511:1379330808'
-                    },
-                    {
-                        url: 'turn:192.158.29.39:3478?transport=tcp',
-                        credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-                        username: '28224511:1379330808'
-                    }
-                ]
-            };
-            var options = {
-                optional: [
-                    {DtlsSrtpKeyAgreement: true}
-                ]
-            }
-            // Création de la connexion Point à point
-            var pc = new PeerConnection(server, options);
-            pc.onicecandidate = function (e) {
-                // take the first candidate that isn't null
-                if (!e.candidate) {
+            function showVolume(el, volume) {
+                if (!el)
                     return;
-                }
-                pc.onicecandidate = null;
-                // request the other peers ICE candidate
-                recv(ROOM, "candidate:" + otherType, function (candidate) {
-                    pc.addIceCandidate(new IceCandidate(JSON.parse(candidate)));
-                });
-                // send our ICE candidate
-                send(ROOM, "candidate:" + type, JSON.stringify(e.candidate));
-            };
-            // grab the video elements from the document
-            var video = document.getElementById("video");
-            var video2 = document.getElementById("otherPeer");
-            // get the user's media, in this case just video
-            navigator.getUserMedia({video: true}, function (stream) {
-                // set one of the video src to the stream
-                video.src = URL.createObjectURL(stream);
-                // add the stream to the PeerConnection
-                pc.addStream(stream);
-                // now we can connect to the other peer
-                connect();
-            }, errorHandler);
-            // when we get the other peer's stream, add it to the second
-            // video element.
-            pc.onaddstream = function (e) {
-                video2.src = URL.createObjectURL(e.stream);
-            };
-            // constraints on the offer SDP. Easier to set these
-            // to true unless you don't want to receive either audio
-            // or video.
-            var constraints = {
-                mandatory: {
-                    OfferToReceiveAudio: true,
-                    OfferToReceiveVideo: true
-                }
-            };
-            // Debut de la connexion
-            function connect() {
-                if (type === "offerer") {
-                    // Création du SDP, protocole de communication de description de paramètres d'initialisation d'une session de diffusion en flux
-                    pc.createOffer(function (offer) {
-                        pc.setLocalDescription(offer);
-
-                        // Envoi du SDP à FireBase
-                        send(ROOM, "offer", JSON.stringify(offer));
-                        // Attente de la réponse SDP de FireBase
-                        recv(ROOM, "answer", function (answer) {
-                            pc.setRemoteDescription(
-                                    new SessionDescription(JSON.parse(answer))
-                                    );
-                        });
-                    }, errorHandler, constraints);
-
-                } else {
-                    // answerer needs to wait for an offer before
-                    // génération de la réponse SDP
-                    recv(ROOM, "offer", function (offer) {
-                        pc.setRemoteDescription(
-                                new SessionDescription(JSON.parse(offer))
-                                );
-                        // now we can generate our answer SDP
-                        pc.createAnswer(function (answer) {
-                            pc.setLocalDescription(answer);
-                            // Envoie des informations à FireBase
-                            send(ROOM, "answer", JSON.stringify(answer));
-                        }, errorHandler, constraints);
-                    });
-                }
+                if (volume < -45)
+                    volume = -45; // -45 to -20 is
+                if (volume > -20)
+                    volume = -20; // a good range
+                el.value = volume;
             }
+
+            // we got access to the camera
+            webrtc.on('localStream', function (stream) {
+                var button = document.querySelector('form>button');
+                if (button)
+                    button.removeAttribute('disabled');
+                $('#localVolume').show();
+            });
+            // we did not get access to the camera
+            webrtc.on('localMediaError', function (err) {
+            });
+
+            // local screen obtained
+            webrtc.on('localScreenAdded', function (video) {
+                video.onclick = function () {
+                    video.style.width = video.videoWidth + 'px';
+                    video.style.height = video.videoHeight + 'px';
+                };
+                document.getElementById('localScreenContainer').appendChild(video);
+                $('#localScreenContainer').show();
+            });
+            // local screen removed
+            webrtc.on('localScreenRemoved', function (video) {
+                document.getElementById('localScreenContainer').removeChild(video);
+                $('#localScreenContainer').hide();
+            });
+
+            // Ajout de la video de l'autre utilisateur
+            webrtc.on('videoAdded', function (video, peer) {
+                console.log('video added', peer);
+                var remotes = document.getElementById('remotes');
+                if (remotes) {
+                    var container = document.createElement('div');
+                    container.className = 'videoContainer';
+                    container.id = 'container_' + webrtc.getDomId(peer);
+                    container.appendChild(video);
+
+                    // suppress contextmenu
+                    video.oncontextmenu = function () {
+                        return false;
+                    };
+
+                    // resize the video on click
+                    video.onclick = function () {
+                        container.style.width = video.videoWidth + 'px';
+                        container.style.height = video.videoHeight + 'px';
+                    };
+
+                    // show the remote volume
+                    var vol = document.createElement('meter');
+                    vol.id = 'volume_' + peer.id;
+                    vol.className = 'volume';
+                    vol.min = -45;
+                    vol.max = -20;
+                    vol.low = -40;
+                    vol.high = -25;
+                    container.appendChild(vol);
+
+                    // show the ice connection state
+                    if (peer && peer.pc) {
+                        var connstate = document.createElement('div');
+                        connstate.className = 'connectionstate';
+                        container.appendChild(connstate);
+                        peer.pc.on('iceConnectionStateChange', function (event) {
+                            switch (peer.pc.iceConnectionState) {
+                                case 'checking':
+                                    connstate.innerText = 'Connecting to peer...';
+                                    break;
+                                case 'connected':
+                                case 'completed': // on caller side
+                                    $(vol).show();
+                                    connstate.innerText = 'Connection established.';
+                                    break;
+                                case 'disconnected':
+                                    connstate.innerText = 'Disconnected.';
+                                    break;
+                                case 'failed':
+                                    connstate.innerText = 'Connection failed.';
+                                    break;
+                                case 'closed':
+                                    connstate.innerText = 'Connection closed.';
+                                    break;
+                            }
+                        });
+                    }
+                    remotes.appendChild(container);
+                }
+            });
+            // a peer was removed
+            webrtc.on('videoRemoved', function (video, peer) {
+                console.log('video removed ', peer);
+                var remotes = document.getElementById('remotes');
+                var el = document.getElementById(peer ? 'container_' + webrtc.getDomId(peer) : 'localScreenContainer');
+                if (remotes && el) {
+                    remotes.removeChild(el);
+                }
+            });
+
+            // local volume has changed
+            webrtc.on('volumeChange', function (volume, treshold) {
+                showVolume(document.getElementById('localVolume'), volume);
+            });
+            // remote volume has changed
+            webrtc.on('remoteVolumeChange', function (peer, volume) {
+                showVolume(document.getElementById('volume_' + peer.id), volume);
+            });
+
+            // local p2p/ice failure
+            webrtc.on('iceFailed', function (peer) {
+                var connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
+                console.log('local fail', connstate);
+                if (connstate) {
+                    connstate.innerText = 'Connection failed.';
+                    fileinput.disabled = 'disabled';
+                }
+            });
+
+            // remote p2p/ice failure
+            webrtc.on('connectivityError', function (peer) {
+                var connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
+                console.log('remote fail', connstate);
+                if (connstate) {
+                    connstate.innerText = 'Connection failed.';
+                    fileinput.disabled = 'disabled';
+                }
+            });
+
+            // Since we use this twice we put it here
+            function setRoom(name) {
+                document.querySelector('form').remove();
+                document.getElementById('title').innerText = 'Room: ' + name;
+                console.log(name);
+                console.log(location.href);
+                document.getElementById('subTitle').innerText = 'partage du lien: ' + location.href;
+                
+                $('body').addClass('active');
+            }
+
+            if (room) {
+                setRoom(room);
+            } else {
+                $('form').submit(function () {
+                    //récupération du nom de la room
+                    var val = $('#sessionInput').val().toLowerCase().replace(/\s/g, '-').replace(/[^A-Za-z0-9_\-]/g, '');
+                    webrtc.createRoom(val, function (err, name) {
+                        console.log(' create room cb', arguments);
+
+                        var newUrl = location.pathname + '?' + name;
+                        if (!err) {
+                            history.replaceState({foo: 'bar'}, null, newUrl);
+                            setRoom(name);
+                        } else {
+                            console.log(err);
+                        }
+                    });
+                    return false;
+                });
+            }
+/* script pour le partage d'écran
+            var button = document.getElementById('screenShareButton'),
+                    setButton = function (bool) {
+                        button.innerText = bool ? 'partager mon écran' : 'arrêter le partage';
+                    };
+            if (!webrtc.capabilities.supportScreenSharing) {
+                button.disabled = 'disabled';
+            }
+            webrtc.on('localScreenRemoved', function () {
+                setButton(true);
+            });
+
+            setButton(true);
+
+            button.onclick = function () {
+                if (webrtc.getLocalScreen()) {
+                    webrtc.stopScreenShare();
+                    setButton(true);
+                } else {
+                    webrtc.shareScreen(function (err) {
+                        if (err) {
+                            setButton(true);
+                        } else {
+                            setButton(false);
+                        }
+                    });
+
+                }
+            }; */
         </script>
     </body>
 </html>

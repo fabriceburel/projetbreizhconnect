@@ -77,8 +77,8 @@ include_once 'header.php';
             {
                 ?>
                 <div class="white row col s12 profileUser">
-                    <div class="col l2 s5">
-                        <img class="avatarUser" src="<?= $user->avatar == '' ? 'media/profile/default/imagepardefaut.jpeg' : 'media/' . $user->id . '/profile/' . $user->avatar; ?>" width="100" height="120" alt="<?= $user->username ?>"/>
+                    <div class="col s5 m2 l2">
+                        <img class="avatarUser" src="<?= $user->avatar == '' ? 'media/profile/default/imagepardefaut.jpeg' : 'media/' . $user->id . '/profile/' . $user->avatar; ?>" width="100" height="100" alt="<?= $user->username ?>"/>
                         <p class="white-text status <?= $user->log == 0 ? 'grey' : 'green' ?>"><?= $user->log == 0 ? 'Déconnecté' : 'Connecté' ?></p>
                     </div>
                     <div class="row col offset-l3 l3 s5 username">
