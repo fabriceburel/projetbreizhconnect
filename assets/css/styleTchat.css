@@ -35,20 +35,54 @@ p.userHour{
     border-radius: 20px;
 }
 ul#userFriendList a{
-    background-color: #101010;
-    color: white;
+    font-size: 1em;
 }
-ul#userFriendList{
-    background-color: #101010;
-    color: white;
+ul#userFriendList span.country{
+    font-size: 0.8em;
 }
 ul#userFriendList a:focus, ul#userFriendList a:hover{
-    background-color: white;
-    color: #101010;
+    background-color: #101010;
+    color: white;
+    font-size: 1.2em;
 }
-@media screen and (min-width: 600px) and (max-width: 992px){
-    #messenger{
-        margin-left: -160px;
+p.status{
+    width: 100px;
+}
+
+/*mise en forme de la webcam */
+.videoContainer {
+    position: relative;
+    width: 200px;
+    height: 150px;
+}
+.videoContainer video {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.volume {
+    position: absolute;
+    left: 15%;
+    width: 70%;
+    bottom: 5px;
+    height: 5px;
+    display: none;
+}
+.connectionstate {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    text-align: center;
+    color: #fff
+}
+#localScreenContainer {
+    display: none;
+}
+@media screen and (min-width: 993px) and (max-width: 1100px){
+    .profileUser.col{
+        padding:0;
     }
-    
+    #listFriend{
+        padding: 0;
+    }
 }

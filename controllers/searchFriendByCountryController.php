@@ -32,7 +32,7 @@ if (isset($_POST['searchFriend']))
         {
             if (intval($_POST['region']) != 0)
             {
-                $FriendUsers->region = intval($_POST['region']);
+                $FriendUsers->idRegion = intval($_POST['region']);
             }
             else
             {
@@ -67,6 +67,7 @@ if (!empty($_SESSION['id']))
     $listFriend = $relationship->listFriend();
     $listBlockFriend = $relationship->listBlockFriend();
     $listFriendBlock = $relationship->listFriendBlock();
+    $listFriendWaitAdd = $relationship->listFriendWaitAdd();
 }
 /*
  * Si l'utilisateur à cliquer sur le bouton Ajouter

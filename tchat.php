@@ -9,7 +9,7 @@ include_once 'header.php';
 ?>
 <link rel="stylesheet" href="assets/css/styleTchat.css">
 <div class="row" id="messengerFriend">
-    <div class="col s12 m8 l8 white" id="messenger">
+    <div class="col s12 m12 l7 white" id="messenger">
         <?php
         if ($newMessage->idReceiver != 0)
         {
@@ -21,10 +21,12 @@ include_once 'header.php';
                 {
                     $anchors = 0;
                     $date = NULL;
+                    //on parcours les messages 1 par 1
                     foreach ($readMessages as $message)
                     {
                         $anchors++;
                         $checkDate = $message->date;
+                        //on vérifie de quel jour date les messages
                         if ($checkDate == $message->today)
                         {
                             $checkDate = 'Ajourd\'hui';
@@ -36,6 +38,7 @@ include_once 'header.php';
                             <h5 class="col s12 center-align"><strong><?= $date ?></strong></h5>
                             <?php
                         }
+                        //on vérifie de qui provient le message (de l’utilisateur ou de son interlocuteur afin de les différencier
                         if ($message->id == $newMessage->idTransmitter)
                         {
                             ?>
@@ -55,12 +58,17 @@ include_once 'header.php';
                     }
                     ?>
                 </div>
+                            <!-- zone de texte pour l’écriture des messages à envoyer à l’interlocuteur -->
                 <div class="spaceWrite">
                     <form action="#" method="POST" id="sendMessage">
                         <input type="hidden" name="friendRelation" userId="<?= $newMessage->idTransmitter ?>" value="<?= $newMessage->idReceiver ?>">
                         <input type="texte" name="newMessage" id="writeMessage">
-                        <input type="submit" value="Envoyer" class="btn black" id="newMessage">        
-                    </form>    
+                        <input type="submit" value="Envoyer" class="btn black" id="newMessage">
+                        <a class="btn-floating waves-effect waves-light modal-trigger" title="commencer un échange video" id="camera" href="#modalVideo"><i class="material-icons">videocam</i></a>
+                        <div id="modalVideo" class="modal">
+                            
+                        </div>
+                    </form> 
                 </div>
                 <?php
             }
@@ -71,22 +79,23 @@ include_once 'header.php';
             <?php }
             ?>
         </div>
-        <div class="col s4 m4 l4 white hide-on-small-only" id="listFriend">
+        <div class="col l5 white hide-on-small-only hide-on-med-only" id="listFriend">
             <?php
+            //liste des personnes avec qui on peut communiquer
             foreach ($friendList AS $user)
             {
                 ?>
-                <div class="white row col s12 profileUser">
-                    <div class="col s5 m2 l2">
+                <div class="white row col m12 profileUser">
+                    <div class="col l2">
                         <img class="avatarUser" src="<?= $user->avatar == '' ? 'media/profile/default/imagepardefaut.jpeg' : 'media/' . $user->id . '/profile/' . $user->avatar; ?>" width="100" height="100" alt="<?= $user->username ?>"/>
                         <p class="white-text status <?= $user->log == 0 ? 'grey' : 'green' ?>"><?= $user->log == 0 ? 'Déconnecté' : 'Connecté' ?></p>
                     </div>
-                    <div class="row col offset-l3 l3 s5 username">
+                    <div class="row col offset-l1 l9 username">
                         <h4><?= $user->username ?> de : <span class="country"><?= $user->country ?></span></h4>
                     </div>
-                    <div class="row col offset-l2 l8 s7 buttonUser">
-                        <a class="btn black col l3 s12" href="profilFriend.php?idFriend=<?= $user->id ?>">PROFIL</a>
-                        <a class="btn col offset-m2 green" href="tchat.php?friend=<?= $user->id ?>">Echanger</a>
+                    <div class="row col offset-l1 l9 buttonUser">
+                        <a class="btn black col m6" href="profilFriend.php?idFriend=<?= $user->id ?>">PROFIL</a>
+                        <a class="btn col m6 green" href="tchat.php?friend=<?= $user->id ?>">Echanger</a>
                     </div>
                 </div>
             <?php }

@@ -1,17 +1,21 @@
 <?php
-
+//on instancie les class dont nous avons besoin.
 $NewUsers = new users();
 $country = new country();
+//appel de la méthode qui permet de récupérer la liste des pays
 $countryList = $country->getListCountry();
 $region = new region();
+//appel de la méthode qui permet de récupérer la liste des région
 $regionList = $region->getListRegion();
+$log = new log();
 //regex pour le prénom, accepte les prénom simple d'une taille minimum de 2 caractères sans importances sur la cast et les prénoms composé de 2 caractère par partie 
 $regexName = '/((^[éèàëîïêa-z\']{2,10}[-][éèàîïëêa-z\']{2,10}$)|(^[éèàîïëêa-z\']{2,15}$))/i';
-$regexUsername = '/^[éèàëêîïa-z0-9]{2,20}$/i';
+$regexUsername = '/^[éèàëêîïa-z-_0-9]{2,20}$/i';
 //regex pour le mot de passe accepte tout les caractères mais oblige d'avoir des lettres et soit un caractère spécial soit un nombre
 $regexPassword = '/((W\d\w)|(\w\d\W)|(\d\w\W)|(\d\w\W)|(\d\w)|(\w\d)|(\w\W)|(\W\w))/i';
 $regexLocalisation = '/^[0-9]{1,3}$/';
 $textPicture = '';
+//on vérifie que chaque champs est bien été rempli
 if (!empty($_POST['mail']))
 {
     $NewUsers->mail = strip_tags($_POST['mail']);
@@ -120,7 +124,7 @@ if (isset($_POST['passwordUser']) && isset($_POST['passwordCheck']))
     $NewUsers->password = $_POST['passwordUser'];
     $password = $NewUsers->password;
     $NewUsers->checkPassword = $_POST['passwordCheck'];
-    if (preg_match($regexPassword, $NewUsers->password) && strlen($NewUsers->password) > 5 && strlen($NewUsers->password < 20))
+    if (preg_match($regexPassword, $NewUsers->password) && strlen($NewUsers->password) > 5 && strlen($NewUsers->password < 20) && ($_POST['passwordCheck'] == $NewUsers->password))
     {
         $textPassword = '';
         $checkPassword = true;
@@ -133,6 +137,11 @@ if (isset($_POST['passwordUser']) && isset($_POST['passwordCheck']))
     elseif ($_POST['passwordCheck'] != $NewUsers->password)
     {
         $textPassword = 'Les mots de passe saisis ne sont pas identique, recommencez !';
+        $checkPassword = false;
+    }
+    else
+    {
+        $textPassword = 'Le  mot de passe n\'est pas conforme, recommencez !';
         $checkPassword = false;
     }
 }
@@ -265,6 +274,10 @@ if ($checkBirthday && $checkUsername && $checkCountry && $checkMail && $checkFir
         if ($userId != 0)
         {
             $_SESSION['id'] = $userId;
+            $log->idUser = $userId;
+            $log->connect = 1;
+            //On créer la ligne de log pour dans la table concerné pour ce nouvel utilisateur
+            $log->createLog();
             $folderAvatar = 'media/' . $userId . '/profile/';
             $folderFiles = 'media/' . $userId . '/files/';
             //Ici on crée le dossier comprenant le numéro de l'ID du nouvel utilisateur et le dossier de profile de manière récursive

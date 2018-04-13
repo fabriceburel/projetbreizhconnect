@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Permet la suppression du profil utilisateur
  * Avant la suppression je m'assure de l'id de l'utilisateur pour éviter les tentatives malveillantes
@@ -15,10 +16,12 @@ if (isset($_POST['profilId']))
         if ($users->deleteUser())
         {
             $returnAjax = 'success';
-            $folderUser= '../media/' . $users->id;
+            $folderUser = '../media/' . $users->id;
             exec(sprintf("rm -r %s", escapeshellarg($folderUser)));
             session_destroy();
-        }else{
+        }
+        else
+        {
             $returnAjax = 'fail';
         }
     }
@@ -36,6 +39,14 @@ else
     {
         $users->id = $_SESSION['id'];
         $user = $users->getProfileUserById();
+        if ($user->avatar == '')
+        {
+            $pathPicture = 'media/profile/default/imagepardefaut.jpeg';
+        }
+        else
+        {
+            $pathPicture = 'media/' . $user->id . '/profile/' . $user->avatar;
+        }
     }
 }
 

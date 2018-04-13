@@ -3,14 +3,15 @@ include_once 'models/dataBase.php';
 include_once 'models/user.php';
 include_once 'models/country.php';
 include_once 'models/region.php';
+include_once 'models/log.php';
 include 'controllers/headerController.php';
 include_once 'controllers/subscribeControllers.php';
 include_once 'header.php';
-?>
-<?php
 if ($checkBirthday && $checkUsername && $checkCountry && $checkMail && $checkFirstname && $checkRegion && $checkName && $checkPassword && $checkPicture && $insertSuccess)
 {
-    echo $textError;
+    ?>
+    <h3><?= $textError; ?></h3>
+    <?php
 }
 else
 {
@@ -24,7 +25,7 @@ else
                 <form action="#" method="POST" enctype="multipart/form-data" class="subscribe row">
                     <h2 class="col s12 l12 center-align">Inscription</h2>
                     <!-- Création de l'emplacement du nom -->
-                    <div class="col offset-l2 s8 l8">
+                    <div class="col offset-l2 s12 l8">
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
                             <input type="text" name="lastname" class="white-text" id="lastname" required value="<?= $NewUsers->lastname; ?>">
@@ -32,7 +33,7 @@ else
                         </div>
                     </div>
                     <!-- Création de l'emplacement du prénom -->
-                    <div class="col offset-l2 s8 l8">
+                    <div class="col offset-l2 s12 l8">
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
                             <input type="text" name="firstname" class="white-text" id="firstname" required value="<?= $NewUsers->firstname ?>">
@@ -40,15 +41,15 @@ else
                         </div>
                     </div>
                     <!-- Création de l'emplacement Pseudo -->
-                    <div class="col offset-l2 s8 l8">
+                    <div class="col offset-l2 s12 l8">
                         <div class="input-field">
                             <i class="material-icons prefix">account_circle</i>
                             <input type="text" name="username" class="white-text" id="username" required value="<?= $NewUsers->username ?>">
-                            <label for="username">Choisissez un pseudo : <p class="textError"><?= $textUsername; ?></p></label>
+                            <label for="username">Choisissez un pseudo : <p class="textError col l12"><?= $textUsername; ?></p></label>
                         </div>
                     </div>
                     <!-- Création de l'emplacement Date de naissance -->
-                    <div class="col offset-l2 s8 l8">
+                    <div class="col offset-l2 s12 l8">
                         <div class="input-field">
                             <i class="material-icons prefix">perm_contact_calendar</i>
                             <input type="text" name="birthdate" class="datepicker white-text" id="birthdate" required value="<?= $NewUsers->birthdateFrench ?>">
@@ -56,7 +57,7 @@ else
                         </div>
                     </div>
                     <!-- Création de l'emplacement du mail -->
-                    <div class="col offset-l2 s8 l8">
+                    <div class="col offset-l2 s12 l8">
                         <div class="input-field">
                             <i class="material-icons prefix">contact_mail</i>
                             <input type="email" name="mail" class="white-text" id="mail" required value="<?= $NewUsers->mail ?>">
@@ -64,7 +65,7 @@ else
                         </div>
                     </div>
                     <!-- création de la liste deroulante permettant de choisir son pays -->
-                    <div class="col offset-l2 s8 l8">
+                    <div class="col offset-l2 s12 l8">
                         <div class="input-field">
                             <i class="fa fa-globe prefix" aria-hidden="true"></i>
                             <select name="country"  class="white-text country" required>
@@ -81,7 +82,7 @@ else
                             <label class="localisation" for="country">Séléctionnez votre pays : <p class="textError"><?= $textCountry; ?></p></label>
                         </div>   
                     </div>
-                    <div class="col offset-l2 s8 l8">
+                    <div class="col offset-l2 s12 l8">
                         <div class="input-field region">
                             <i class="fa fa-globe prefix" aria-hidden="true"></i>
                             <select name="region" class="white-text">
@@ -99,7 +100,7 @@ else
                         </div>
                     </div>
                     <!-- Création de l'emplacement du mdp -->
-                    <div class="col offset-l2 s8 l8">
+                    <div class="col offset-l2 s12 l8">
                         <div class="input-field">
                             <i class="material-icons prefix">vpn_key</i>
                             <input type="password" name="passwordUser" class="white-text" id="passwordUser" required value="<?= $NewUsers->password ?>">
@@ -107,7 +108,7 @@ else
                         </div>
                     </div>
                     <!-- Création de l'emplacement de la vérification -->
-                    <div class="col offset-l2 s8 l8">
+                    <div class="col offset-l2 s12 l8">
                         <div class="input-field">
                             <i class="material-icons prefix">vpn_key</i>              
                             <input type="password" name="passwordCheck" class="white-text" id="passwordCheck" required value="<?= $NewUsers->checkPassword ?>">
@@ -115,14 +116,14 @@ else
                         </div>  
                     </div>
                     <!-- Possibilité d'ajouter une photo de profil -->
-                    <div class="col offset-l2 s8 l8">
-                        <div class="file-field input-field">              
-                            <div class="btn grey darken-4 white-text">                
+                    <div class="col offset-l2 s12 l8">
+                        <div class="file-field input-field row">              
+                            <div class="btn grey darken-4 white-text col s12 l6">                
                                 <span>Votre Photo <i class="material-icons right">cloud_upload</i></span>
                                 <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
                                 <input type="file" name="avatar">
                             </div>
-                            <div class="file-path-wrapper">
+                            <div class="file-path-wrapper col s12 l6">
                                 <input class="file-path validate" type="text">
                                 <img src="assets/img/apercuimage.jpg" alt="apercu image">
                                 <p class="textError"><?= $textPicture; ?></p>
@@ -130,7 +131,7 @@ else
                         </div>
                     </div>
                     <!-- Ajout du bouton pour envoyer la requête -->
-                    <div class="col offset-l2 s8 l8">
+                    <div class="col offset-l2 s12 l8">
                         <div class="input-field center-align">  
                             <button name="subscribe" class="btn btn-large waves-effect waves-light grey darken-4">Valider votre insciption <i class="material-icons right">send</i></button>
                         </div>

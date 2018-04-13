@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Gestion des pays avec héritage de la class dataBase
+ */
 class country extends dataBase {
 
     public $id = 0;
@@ -9,13 +12,15 @@ class country extends dataBase {
     {
         parent::__construct();
     }
+
     public function getListCountry()
     {
-        $query = 'SELECT `id`, `country` FROM `' . self::PREFIX .  'country`';
+        $query = 'SELECT `id`, `country` FROM ' . COUNTRY . '';
         $listCountry = $this->db->query($query);
         $countries = $listCountry->fetchAll(PDO::FETCH_OBJ);
         return $countries;
     }
+
     public function __destruct()
     {
         

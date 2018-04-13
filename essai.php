@@ -8,8 +8,9 @@ include_once 'controllers/tchatController.php';
 include_once 'header.php';
 ?>
 <link rel="stylesheet" href="assets/css/styleTchat.css">
-<div class="row" id="messengerFriend">
+<div class="row" id="messengerFriend">    
     <div class="col s12 m8 l8 white" id="messenger">
+        <iframe  src="webcam.php" width="500" height="500"></iframe>
         <?php
         if ($newMessage->idReceiver != 0)
         {
@@ -92,9 +93,6 @@ include_once 'header.php';
             <?php }
             ?>
         </div>
-        <iframe  src="webcam.php" width="300" height="300">
-
-        </iframe>
     </div>
     <?php
     include 'footer.php';

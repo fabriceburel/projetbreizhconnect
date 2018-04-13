@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Gestion des pays avec héritage de la class dataBase
+ */
 class region extends dataBase {
 
     public $id = 0;
@@ -11,7 +13,7 @@ class region extends dataBase {
     }
     public function getListRegion()
     {
-        $query = 'SELECT `id`, `region` FROM `' . self::PREFIX .  'region`';
+        $query = 'SELECT `id`, `region` FROM ' . REGION;
         $listRegion = $this->db->query($query);
         $regions = $listRegion->fetchAll(PDO::FETCH_OBJ);
         return $regions;

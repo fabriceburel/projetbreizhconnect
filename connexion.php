@@ -1,6 +1,7 @@
 <?php
 include_once 'models/dataBase.php';
 include_once 'models/user.php';
+include_once 'models/log.php';
 include 'controllers/headerController.php';
 include_once 'controllers/buttonLogOffController.php';
 include_once 'header.php';

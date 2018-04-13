@@ -18,7 +18,7 @@
     width: 100%;
 }
 form.searchUser .textError{
-    background-color: yellow;
+    font-size: 0.8em;
 }
 div .profileUser {
     padding-left: 0;
@@ -33,6 +33,9 @@ avatarUser{
     max-width: 30px;
     max-height: 30px;
 }
+p.status{
+    width: 100px;
+}
 @media all and (max-device-width: 634px){
     .localisation{
         margin-bottom: 2em;
@@ -42,5 +45,8 @@ avatarUser{
     }
     form.searchUser .textError{
         background-color: yellow;
+    }
+    .profileUser .username{
+        margin-bottom: 5px;
     }
 }

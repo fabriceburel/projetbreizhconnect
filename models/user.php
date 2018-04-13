@@ -1,9 +1,7 @@
 <?php
 
 /**
- * Description of user
- *
- * @author fabrice
+ * Gestion des utilisateurs avec héritage de la class dataBase
  */
 class users extends dataBase {
 
@@ -20,7 +18,6 @@ class users extends dataBase {
     public $password = '';
     public $avatar = '';
     public $checkPassword = '';
-    public $log = 0;
 
     public function __construct()
     {
@@ -32,8 +29,8 @@ class users extends dataBase {
      */
     public function addUsers()
     {
-        //On prépare la requête sql qui insert dans les champs selectionnés, les valeurs sont des marqueurs nominatifs
-        $query = 'INSERT INTO `' . self::PREFIX . 'user` (`firstname`, `lastname`, `birthdate`, `mail`, `username`, `idCountry`, `idRegion`, `password`, `avatar`) VALUES (:firstname, :lastname, :birthdate, :mail, :username, :country, :region, :password, :avatar)';
+        //On prépare la requête sql qui insert dans les champs selectionnés, les valeurs sont récupérés via les marqueurs nominatifs
+        $query = 'INSERT INTO ' . USER . ' (`firstname`, `lastname`, `birthdate`, `mail`, `username`, `idCountry`, `idRegion`, `password`, `avatar`) VALUES (:firstname, :lastname, :birthdate, :mail, :username, :country, :region, :password, :avatar)';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':lastname', $this->lastname, PDO::PARAM_STR);
         $responseRequest->bindValue(':firstname', $this->firstname, PDO::PARAM_STR);
@@ -50,8 +47,8 @@ class users extends dataBase {
 
     public function updateUsers()
     {
-        //On prépare la requête sql qui insert dans les champs selectionnés, les valeurs sont des marqueurs nominatifs
-        $query = 'UPDATE `' . self::PREFIX . 'user` SET `firstname` = :firstname,`lastname` = :lastname,`username` = :username,`idCountry` = :country, `idRegion` = :region, `avatar` = :avatar, `birthdate` = :birthdate, `mail` = :mail, `password` = :password WHERE `id` = :id';
+        //On prépare la requête sql qui insert dans les champs selectionnés, les valeurs sont récupérés via les marqueurs nominatifs
+        $query = 'UPDATE ' . USER . ' SET `firstname` = :firstname,`lastname` = :lastname,`username` = :username,`idCountry` = :country, `idRegion` = :region, `avatar` = :avatar, `birthdate` = :birthdate, `mail` = :mail, `password` = :password WHERE `id` = :id';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':firstname', $this->firstname, PDO::PARAM_STR);
         $responseRequest->bindValue(':lastname', $this->lastname, PDO::PARAM_STR);
@@ -72,7 +69,7 @@ class users extends dataBase {
      */
     public function existMail()
     {
-        $query = 'SELECT `mail` FROM `' . self::PREFIX . 'user` WHERE `mail` = :mail';
+        $query = 'SELECT `mail` FROM ' . USER . ' WHERE `mail` = :mail';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':mail', $this->mail, PDO::PARAM_STR);
         $mailExist = false;
@@ -92,7 +89,7 @@ class users extends dataBase {
      */
     public function existUsername()
     {
-        $query = 'SELECT `username` FROM `' . self::PREFIX . 'user` WHERE `username` = :username';
+        $query = 'SELECT `username` FROM ' . USER . ' WHERE `username` = :username';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':username', $this->username, PDO::PARAM_STR);
         $UsernameExist = false;
@@ -113,7 +110,7 @@ class users extends dataBase {
     public function getUserIdByUsername()
     {
         $userId = 0;
-        $query = 'SELECT `id` FROM `' . self::PREFIX . 'user` WHERE `username` = :username';
+        $query = 'SELECT `id` FROM ' . USER . ' WHERE `username` = :username';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':username', $this->username, PDO::PARAM_STR);
         if ($responseRequest->execute())
@@ -128,24 +125,12 @@ class users extends dataBase {
     }
 
     /**
-     * Cette méthode met à jour le statut de l'utilisateur lors de sa connexion ou déconnexion
-     */
-    public function updateLog()
-    {
-        $query = 'UPDATE `' . self::PREFIX . 'user` SET `log`= :log WHERE `id` = :id';
-        $responseRequest = $this->db->prepare($query);
-        $responseRequest->bindValue(':id', $this->id, PDO::PARAM_STR);
-        $responseRequest->bindValue(':log', $this->log, PDO::PARAM_BOOL);
-        return $responseRequest->execute();
-    }
-
-    /**
      * cette méthode permet de récupérer l'id et le mot de passe associé au pseudo lors de la connexion
      */
     public function getLoginByUsername()
     {
         $resultRequest = array();
-        $query = 'SELECT `id`, `password` FROM `' . self::PREFIX . 'user` WHERE `username` = :username';
+        $query = 'SELECT `id`, `password` FROM ' . USER . ' WHERE `username` = :username';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':username', $this->username, PDO::PARAM_STR);
         if ($responseRequest->execute())
@@ -161,7 +146,7 @@ class users extends dataBase {
     public function getProfileUserById()
     {
         $resultRequest = array();
-        $query = 'SELECT `' . self::PREFIX . 'user`.`firstname`, `' . self::PREFIX . 'user`.`lastname`, `' . self::PREFIX . 'user`.`mail`, `' . self::PREFIX . 'user`.`id`, `' . self::PREFIX . 'user`.`avatar`, `' . self::PREFIX . 'user`.`password`, `' . self::PREFIX . 'user`.`username`, date_format(`' . self::PREFIX . 'user`.`birthdate`, \'%d/%m/%Y\') AS `birthdateFrench` , `' . self::PREFIX . 'country`.`country`, `' . self::PREFIX . 'user`.`idCountry`, `' . self::PREFIX . 'user`.`idRegion`, `' . self::PREFIX . 'region`.`region` FROM `' . self::PREFIX . 'user` INNER JOIN `' . self::PREFIX . 'country` ON `' . self::PREFIX . 'user`.`idCountry` = `' . self::PREFIX . 'country`.`id` LEFT JOIN `' . self::PREFIX . 'region` ON `' . self::PREFIX . 'user`.`idRegion` = `' . self::PREFIX . 'region`.`id` WHERE `' . self::PREFIX . 'user`.`id` = :id';
+        $query = 'SELECT CONCAT(UPPER(LEFT(`firstname` ,1)),LOWER(RIGHT(`firstname`, LENGTH(`firstname`)-1)))  as `firstname`,  UPPER(' . USER . '.`lastname`) as `lastname`, ' . USER . '.`mail`, ' . USER . '.`id`, ' . USER . '.`avatar`, FLOOR( DATEDIFF( NOW(), `birthdate`)/365) AS `age`, ' . USER . '.`password`, ' . USER . '.`username`, date_format(' . USER . '.`birthdate`, \'%d/%m/%Y\') AS `birthdateFrench` , ' . COUNTRY . '.`country`, ' . USER . '.`idCountry`, ' . USER . '.`idRegion`, ' . REGION . '.`region` FROM ' . USER . ' INNER JOIN ' . COUNTRY . ' ON ' . USER . '.`idCountry` = ' . COUNTRY . '.`id` LEFT JOIN ' . REGION . ' ON ' . USER . '.`idRegion` = ' . REGION . '.`id` WHERE ' . USER . '.`id` = :id';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':id', $this->id, PDO::PARAM_STR);
         if ($responseRequest->execute())
@@ -172,15 +157,14 @@ class users extends dataBase {
     }
 
     /**
-     * cette fonction liste les personnes correspondant au critère 
+     * cette fonction liste les personnes correspondant au critère
      * pays, région , pseudo.
-     * Seul le pays est obligatoire
      */
     public function getListFriendByCountry()
     {
         $resultRequest = array();
         //cette requête permet de rechercher une personne en fonction de son pays et/ou de sa région(optionnel) et de tout ou une partie de son pseudo (optionnel)
-        $query = 'SELECT `' . self::PREFIX . 'user`.`firstname`, `' . self::PREFIX . 'user`.`lastname`, `' . self::PREFIX . 'user`.`id`, `' . self::PREFIX . 'user`.`username`, `' . self::PREFIX . 'user`.`avatar`, `' . self::PREFIX . 'user`.`log`, `' . self::PREFIX . 'country`.`country`, `' . self::PREFIX . 'region`.`region` FROM `' . self::PREFIX . 'user` INNER JOIN `' . self::PREFIX . 'country` ON `' . self::PREFIX . 'user`.`idCountry` = `' . self::PREFIX . 'country`.`id` LEFT JOIN `' . self::PREFIX . 'region` ON `' . self::PREFIX . 'user`.`idRegion` = `' . self::PREFIX . 'region`.`id` WHERE (CASE WHEN :country = 10000 THEN `' . self::PREFIX . 'user`.`idCountry` IS NOT NULL WHEN :country < 10000 THEN `' . self::PREFIX . 'user`.`idCountry` = :country END) AND (CASE WHEN :region = 10000 THEN (`' . self::PREFIX . 'user`.`idRegion` IS NOT NULL OR `' . self::PREFIX . 'user`.`idRegion` IS NULL) WHEN :region = 9000 THEN `' . self::PREFIX . 'user`.`idRegion` IS NOT NULL WHEN :region < 9000 THEN `' . self::PREFIX . 'user`.`idRegion` = :region ELSE `' . self::PREFIX . 'user`.`idRegion` IS NULL END) AND `' . self::PREFIX . 'user`.`username` LIKE :username ORDER BY (CASE WHEN `pklds_user`.`idRegion` IS NOT NULL THEN `pklds_user`.`idRegion` ELSE`pklds_user`.`idCountry` END), `' . self::PREFIX . 'user`.`log` DESC';
+        $query = 'SELECT CONCAT(UPPER(LEFT(`firstname` ,1)),LOWER(RIGHT(`firstname`, LENGTH(`firstname`)-1))) as `firstname`,  UPPER(' . USER . ' .`lastname`) as `lastname`, ' . USER . '.`id`, ' . USER . '.`username`, ' . USER . '.`avatar`, FLOOR( DATEDIFF( NOW(), `birthdate`)/365) AS `age`, (CASE WHEN TIMESTAMPDIFF(MINUTE,' . LOG . '.`lastAction`, now())<20 AND ' . LOG . '.`connect` = 1 THEN 1 ELSE 0 END) AS `log`, ' . COUNTRY . '.`country`, ' . REGION . '.`region` FROM ' . USER . ' INNER JOIN ' . COUNTRY . ' ON ' . USER . '.`idCountry` = ' . COUNTRY . '.`id` LEFT JOIN ' . REGION . ' ON ' . USER . '.`idRegion` = ' . REGION . '.`id` INNER JOIN ' . LOG . ' ON ' . USER . '.`id` = ' . LOG . '.`idUSer` WHERE (CASE WHEN :country = 10000 THEN ' . USER . '.`idCountry` IS NOT NULL WHEN :country < 10000 THEN ' . USER . '.`idCountry` = :country END) AND (CASE WHEN :region = 10000 THEN (' . USER . '.`idRegion` IS NOT NULL OR ' . USER . '.`idRegion` IS NULL) WHEN :region = 9000 THEN ' . USER . '.`idRegion` IS NOT NULL WHEN :region < 9000 THEN ' . USER . '.`idRegion` = :region ELSE ' . USER . '.`idRegion` IS NULL END) AND ' . USER . '.`username` LIKE :username ORDER BY (CASE WHEN ' . USER . '.`idRegion` IS NOT NULL THEN ' . USER . '.`idRegion` ELSE' . USER . '.`idCountry` END), ' . LOG . '.`lastAction` DESC';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':country', $this->idCountry, PDO::PARAM_INT);
         $responseRequest->bindValue(':region', $this->idRegion, PDO::PARAM_INT);
@@ -198,7 +182,7 @@ class users extends dataBase {
     public function waitingAdd()
     {
         $resultRequest = array();
-        $query = 'SELECT `' . self::PREFIX . 'user`.`username`, `' . self::PREFIX . 'user`.`id` FROM `' . self::PREFIX . 'user` INNER JOIN `' . self::PREFIX . 'relationship` ON `' . self::PREFIX . 'user`.id = `' . self::PREFIX . 'relationship`.`idTransmitter` WHERE `' . self::PREFIX . 'relationship`.`idReceiver` = :id AND `' . self::PREFIX . 'relationship`.`acceptRelation` = 0 AND `' . self::PREFIX . 'relationship`.`block` = 1';
+        $query = 'SELECT ' . USER . '.`username`, ' . USER . '.`id` FROM ' . USER . ' INNER JOIN ' . RELATIONSHIP . ' ON ' . USER . '.id = ' . RELATIONSHIP . '.`idTransmitter` WHERE ' . RELATIONSHIP . '.`idReceiver` = :id AND ' . RELATIONSHIP . '.`acceptRelation` = 0 AND ' . RELATIONSHIP . '.`block` = 1';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':id', $this->id, PDO::PARAM_INT);
         if ($responseRequest->execute())
@@ -214,7 +198,7 @@ class users extends dataBase {
     public function getListMyFriend()
     {
         $resultRequest = array();
-        $query = 'SELECT `' . self::PREFIX . 'user`.`username`, `' . self::PREFIX . 'user`.`id`,  `' . self::PREFIX . 'user`.`avatar`,  `' . self::PREFIX . 'user`.`log`, `' . self::PREFIX . 'country`.`country`, `' . self::PREFIX . 'region`.`region` FROM `' . self::PREFIX . 'user` INNER JOIN `' . self::PREFIX . 'relationship` ON `' . self::PREFIX . 'user`.id = `' . self::PREFIX . 'relationship`.`idReceiver` INNER JOIN `' . self::PREFIX . 'country` ON `' . self::PREFIX . 'country`.`id` = `' . self::PREFIX . 'user`.`idCountry` LEFT JOIN `' . self::PREFIX . 'region` ON `' . self::PREFIX . 'region`.`id` = `' . self::PREFIX . 'user`.`idRegion` WHERE `' . self::PREFIX . 'relationship`.`idTransmitter` = :id AND `' . self::PREFIX . 'relationship`.`acceptRelation` = 1 AND `' . self::PREFIX . 'relationship`.`block` = 1';
+        $query = 'SELECT ' . USER . '.`username`, ' . USER . '.`id`,  ' . USER . '.`avatar`,  (CASE WHEN TIMESTAMPDIFF(MINUTE,' . LOG . '.`lastAction`, now())<20 AND ' . LOG . '.`connect` = 1 THEN 1 ELSE 0 END) AS `log`, ' . COUNTRY . '.`country`, ' . REGION . '.`region` FROM ' . USER . ' INNER JOIN ' . RELATIONSHIP . ' ON ' . USER . '.id = ' . RELATIONSHIP . '.`idReceiver` INNER JOIN ' . COUNTRY . ' ON ' . COUNTRY . '.`id` = ' . USER . '.`idCountry` LEFT JOIN ' . REGION . ' ON ' . REGION . '.`id` = ' . USER . '.`idRegion` INNER JOIN ' . LOG . ' ON ' . USER . '.`id` = ' . LOG . '.`idUSer` WHERE ' . RELATIONSHIP . '.`idTransmitter` = :id AND ' . RELATIONSHIP . '.`acceptRelation` = 1 AND ' . RELATIONSHIP . '.`block` = 1 ORDER BY (CASE WHEN ' . USER . '.`idRegion` IS NOT NULL THEN ' . USER . '.`idRegion` ELSE' . USER . '.`idCountry` END), ' . LOG . '.`lastAction` DESC';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':id', $this->id, PDO::PARAM_INT);
         if ($responseRequest->execute())
@@ -224,21 +208,24 @@ class users extends dataBase {
         return $resultRequest;
     }
 
+    /**
+     * Permet la suppression d'un utilisateur, de sa liste d'ami et de ses messages par l'intermédiaire d'un transaction
+     */
     public function deleteUser()
     {
         $resultDeleteUser = false;
         try {
             //On démarre la transaction, toujours mettre la table enfant avant la table parente pour éviter les soucis de suppression.
             $this->db->beginTransaction();
-            $queryDeleteMessage = 'DELETE FROM `' . self::PREFIX . 'message` USING `' . self::PREFIX . 'message` LEFT JOIN `' . self::PREFIX . 'relationship` ON (`' . self::PREFIX . 'message`.`idRelationship` = `' . self::PREFIX . 'relationship`.`id`) WHERE `' . self::PREFIX . 'relationship`.`idReceiver` = :id OR `' . self::PREFIX . 'relationship`.`idTransmitter` = :id';
+            $queryDeleteMessage = 'DELETE FROM ' . MESSAGE . ' USING ' . MESSAGE . ' LEFT JOIN ' . RELATIONSHIP . ' ON (' . MESSAGE . '.`idRelationship` = ' . RELATIONSHIP . '.`id`) WHERE ' . RELATIONSHIP . '.`idReceiver` = :id OR ' . RELATIONSHIP . '.`idTransmitter` = :id';
             $responseRequestDeleteMessage = $this->db->prepare($queryDeleteMessage);
             $responseRequestDeleteMessage->bindValue(':id', $this->id, PDO::PARAM_INT);
             $responseRequestDeleteMessage->execute();
-            $queryDeleteRelation = 'DELETE FROM `' . self::PREFIX . 'relationship` WHERE `' . self::PREFIX . 'relationship`.`idReceiver` = :id OR `' . self::PREFIX . 'relationship`.`idTransmitter` = :id';
+            $queryDeleteRelation = 'DELETE FROM ' . RELATIONSHIP . ' WHERE ' . RELATIONSHIP . '.`idReceiver` = :id OR ' . RELATIONSHIP . '.`idTransmitter` = :id';
             $responseRequestDeleterelation = $this->db->prepare($queryDeleteRelation);
             $responseRequestDeleterelation->bindValue(':id', $this->id, PDO::PARAM_INT);
             $responseRequestDeleterelation->execute();
-            $queryDeleteUser = 'DELETE FROM `' . self::PREFIX . 'user` WHERE `' . self::PREFIX . 'user`.`id` = :id';
+            $queryDeleteUser = 'DELETE FROM ' . USER . ' WHERE ' . USER . '.`id` = :id';
             $responseRequestDeleteUser = $this->db->prepare($queryDeleteUser);
             $responseRequestDeleteUser->bindValue(':id', $this->id, PDO::PARAM_INT);
             $responseRequestDeleteUser->execute();
@@ -254,7 +241,6 @@ class users extends dataBase {
 
     public function __destruct()
     {
-        
-    }
 
+    }
 }

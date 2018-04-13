@@ -46,6 +46,13 @@ nav ul a{
     font-size: 1.2em;
     font-weight: bold;
 }
+#viewProfile{
+    border: 10px solid #bdbdbd;
+    margin-top: 20px;
+}
+#viewProfile h3{
+    font-size: 1.8em;
+}
 nav ul a:hover{
     font-size: 1.25em;
     background-color: #101010;
@@ -82,7 +89,13 @@ form.btn.logOut{
     background-color: white;
     font-weight: bold;
     border: none;
-    height: 4em;;
+    height: 4em;
+    padding: 0;
+}
+form.btn.logOut input{
+    width: 100%;
+    height: 4em;
+    margin-top: -1.7em;
 }
 h2.logOut{
     padding:0;
@@ -134,7 +147,7 @@ div.logOut input{
     left: 0;
 }
 /*mise en forme des formulaires */
-form.subscribe, form.connexion, form.searchUser {
+form.subscribe, form.connexion, form.searchUser, #modalConnexion, form.fileExchange{
     background-color: white;
     padding: 0 50px 50px 50px ;
 }
@@ -172,6 +185,8 @@ input.select-dropdown{
     color: #000;
     font-size: 1.5em;
     margin-top: -1.5em;
+    margin-left: -5px;
+    width: 600px;
 }
 /* label underline focus color */
 .input-field input[type=text]:focus{
@@ -205,7 +220,8 @@ input.select-dropdown{
 .select-wrapper + label{
     color: black;
     margin-top: -1.3em;
-    font-size: 1.5em;
+    font-size: 1.2em;
+    margin-left: -30px;
 }
 .select-wrapper input.select-dropdown {
     background-color: #333;
@@ -270,6 +286,20 @@ form.col.addFriend{
 table{
     margin-bottom: 6em;
 }
+ul#listFiles li{
+    list-style-type: disc;
+    margin-bottom: 4px;
+}
+@media screen and (min-width: 600px) and (max-width: 992px){
+    form.subscribe, form.connexion, form.searchUser, #modalConnexion, form.fileExchange{
+        padding: 0 10px 10px 10px;
+    }
+    #button-header{
+        padding-left: 0;
+    }
+    form.btn.logOut input{
+    }
+}
 /*media query pour le format small */
 @media all and (max-device-width: 600px){
     .container{
@@ -282,7 +312,7 @@ table{
         font-size: 2em;
     }
     h2{
-        font-size: 1em;
+        font-size: 1.6em;
     }
     h3{
         font-size: 1.8em;
@@ -290,16 +320,12 @@ table{
     .input-field{
         padding-left: 0;
     }
-    div.col.s12{
-        padding: 0;
-    }
-    /* mise en forme du formulaire inscription */
-    form.subscribe, form.connexion, form.searchUser {
-        padding: 0.4em;
+    /* mise en forme des différents formulaire */
+    form.subscribe, form.connexion, form.searchUser, #modalConnexion, form.fileExchange{
+        padding: 20px 20px 200px 20px;
     }
     .input-field .prefix ~ input {
         font-size: 0.9em;
-        width: 200px;
     }
     .input-field .prefix ~ select {
         font-size: 0.9em;
@@ -314,7 +340,7 @@ table{
     .input-field input[type=email]:not(.browser-default):focus:not([readonly]) + label,
     .input-field input[type=password]:not(.browser-default):focus:not([readonly]) + label
     {
-        margin-left: 0;
+        margin-left: 0px;
         margin-bottom: 2em;
         padding-left: 0;
         font-size: 1.2em;
@@ -328,13 +354,14 @@ table{
     }
     .input-field .prefix ~ label.localisation p{
         font-size: 0.6em;
+        padding-left: -5px;
     }
     /* mise en forme de la fenetre modal de la connexion */
     .modalConnexion #username, .modalConnexion #password{
         margin-left: 0;
     }
     .modalConnexion #username + label, .modalConnexion #password + label{
-        margin-left: 1em;
+        margin-left: 20px;
     }
     .modal .modal-content{
         padding:5px;
@@ -343,6 +370,26 @@ table{
         min-height: 450px;
         min-width: 300px;
         top:2%;
+    }
+    #button-header{
+        padding-left: 0;
+    }
+    form.btn.logOut{
+        padding: 0;
+    }
+    form.btn.logOut input{
+        font-size: 0.7em;
+        text-align: center;
+    }
+}
+
+@media all and (max-device-width: 350px){
+    a.button-collapse i{
+        font-size: 1.2em;
+    }
+    form.btn.logOut input{
+        font-size: 0.6em;
+        text-align: center;
     }
 }
 

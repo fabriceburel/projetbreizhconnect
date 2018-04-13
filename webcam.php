@@ -1,10 +1,14 @@
+<?php
+include_once 'models/dataBase.php';
+include_once 'models/relationship.php';
+include_once 'models/message.php';
+include_once 'controllers/webcamController.php';
+?>
 <!DOCTYPE html>
 <html>
     <head>
-        <title>SimpleWebRTC Demo</title>
         <link rel="stylesheet" type="text/css" href="//cloud.typography.com/7773252/764742/css/fonts.css" />
         <link rel="stylesheet" href="css/style.min.css">
-        <link rel="icon" type="image/png" href="img/favicon.png">
         <style>
             .videoContainer {
                 position: relative;
@@ -37,35 +41,34 @@
         </style>
     </head>
     <body>
-        <!-- création d'une room -->
-        <h3 id="title">Start a room</h3>
-        <form id="createRoom">
-            <input id="sessionInput"/>
-            <button disabled type="submit">Create it!</button>
-        </form>
-        <!-- partage d'écran
-        <p id="subTitle"></p>
-        <div>
-          <button id="screenShareButton"></button>
-          (https required for screensharing to work)
-        </div>-->        
-        <div class="videoContainer">
-            <video id="localVideo" height="300px" width="500" oncontextmenu="return false;"></video>
-            <!-- permet de mesurer le son venant de son micro -->
-            <meter id="localVolume" class="volume" min="-45" max="-20" high="-25" low="-40"></meter>
+        <div id="sessionVideo" userIds="<?= $newMessage->idTransmitter . '_' . $newMessage->idReveiver; ?>"><p>transmetteur : <?= $newMessage->idTransmitter; ?></p>
+            <p>emetteur : <?= $newMessage->idReveiver; ?></p>
+
+            <!-- partage d'écran
+            <p id="subTitle"></p>
+            <div>
+              <button id="screenShareButton"></button>
+              (https required for screensharing to work)
+            </div>-->        
+            <div class="videoContainer">
+                <video id="localVideo" height="300px" width="500" oncontextmenu="return false;"></video>
+                <!-- permet de mesurer le son venant de son micro -->
+                <meter id="localVolume" class="volume" min="-45" max="-20" high="-25" low="-40"></meter>
+            </div>
+            <div id="localScreenContainer" class="videoContainer">
+            </div>
+            <!-- affichage de la webcam de l'autre utilisateur -->
+            <div id="remotes"></div>
+            <input type="button" class="btn" id="stopVideo" value="Arrêter">
         </div>
-        <div id="localScreenContainer" class="videoContainer">
-        </div>
-        <!-- affichage de la webcam de l'autre utilisateur -->
-        <div id="remotes"></div>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
         <script src="https://webrtc.github.io/adapter/adapter-4.2.2.js"></script>
         <script src="https://simplewebrtc.com/latest-v3.js"></script>
-                <script>
-            // grab the room from the URL
+        <script>
+            // Permet de générer l'URL en fonction des utilisateurs
             var room = location.search && location.search.split('?')[1];
-
-            // create our webrtc connection
+            console.log(room);
+            // Création de la connection webRTC
             var webrtc = new SimpleWebRTC({
                 // the id/element dom element that will hold "our" video
                 localVideoEl: 'localVideo',
@@ -77,14 +80,12 @@
                 detectSpeakingEvents: true,
                 autoAdjustMic: false
             });
-
             // when it's ready, join if we got a room from the URL
             webrtc.on('readyToCall', function () {
                 // you can name it anything
                 if (room)
                     webrtc.joinRoom(room);
             });
-
             function showVolume(el, volume) {
                 if (!el)
                     return;
@@ -94,18 +95,13 @@
                     volume = -20; // a good range
                 el.value = volume;
             }
-
             // we got access to the camera
             webrtc.on('localStream', function (stream) {
-                var button = document.querySelector('form>button');
-                if (button)
-                    button.removeAttribute('disabled');
                 $('#localVolume').show();
             });
             // we did not get access to the camera
             webrtc.on('localMediaError', function (err) {
             });
-
             // local screen obtained
             webrtc.on('localScreenAdded', function (video) {
                 video.onclick = function () {
@@ -120,7 +116,6 @@
                 document.getElementById('localScreenContainer').removeChild(video);
                 $('#localScreenContainer').hide();
             });
-
             // Ajout de la video de l'autre utilisateur
             webrtc.on('videoAdded', function (video, peer) {
                 console.log('video added', peer);
@@ -130,18 +125,15 @@
                     container.className = 'videoContainer';
                     container.id = 'container_' + webrtc.getDomId(peer);
                     container.appendChild(video);
-
                     // suppress contextmenu
                     video.oncontextmenu = function () {
                         return false;
                     };
-
                     // resize the video on click
                     video.onclick = function () {
                         container.style.width = video.videoWidth + 'px';
                         container.style.height = video.videoHeight + 'px';
                     };
-
                     // show the remote volume
                     var vol = document.createElement('meter');
                     vol.id = 'volume_' + peer.id;
@@ -151,7 +143,6 @@
                     vol.low = -40;
                     vol.high = -25;
                     container.appendChild(vol);
-
                     // show the ice connection state
                     if (peer && peer.pc) {
                         var connstate = document.createElement('div');
@@ -160,21 +151,21 @@
                         peer.pc.on('iceConnectionStateChange', function (event) {
                             switch (peer.pc.iceConnectionState) {
                                 case 'checking':
-                                    connstate.innerText = 'Connecting to peer...';
+                                    connstate.innerText = 'Connection en cours...';
                                     break;
                                 case 'connected':
                                 case 'completed': // on caller side
                                     $(vol).show();
-                                    connstate.innerText = 'Connection established.';
+                                    connstate.innerText = 'La connection est établi.';
                                     break;
                                 case 'disconnected':
-                                    connstate.innerText = 'Disconnected.';
+                                    connstate.innerText = 'Déconnecté.';
                                     break;
                                 case 'failed':
-                                    connstate.innerText = 'Connection failed.';
+                                    connstate.innerText = 'La connection a échouée.';
                                     break;
                                 case 'closed':
-                                    connstate.innerText = 'Connection closed.';
+                                    connstate.innerText = 'La connection est fermée.';
                                     break;
                             }
                         });
@@ -191,7 +182,6 @@
                     remotes.removeChild(el);
                 }
             });
-
             // local volume has changed
             webrtc.on('volumeChange', function (volume, treshold) {
                 showVolume(document.getElementById('localVolume'), volume);
@@ -200,87 +190,83 @@
             webrtc.on('remoteVolumeChange', function (peer, volume) {
                 showVolume(document.getElementById('volume_' + peer.id), volume);
             });
-
             // local p2p/ice failure
             webrtc.on('iceFailed', function (peer) {
                 var connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
                 console.log('local fail', connstate);
                 if (connstate) {
-                    connstate.innerText = 'Connection failed.';
+                    connstate.innerText = 'La connection a échoué.';
                     fileinput.disabled = 'disabled';
                 }
             });
-
             // remote p2p/ice failure
             webrtc.on('connectivityError', function (peer) {
                 var connstate = document.querySelector('#container_' + webrtc.getDomId(peer) + ' .connectionstate');
                 console.log('remote fail', connstate);
                 if (connstate) {
-                    connstate.innerText = 'Connection failed.';
+                    connstate.innerText = 'La connection a échoué.';
                     fileinput.disabled = 'disabled';
                 }
             });
-
             // Since we use this twice we put it here
             function setRoom(name) {
-                document.querySelector('form').remove();
-                document.getElementById('title').innerText = 'Room: ' + name;
                 console.log(name);
-                console.log(location.href);
-                document.getElementById('subTitle').innerText = 'partage du lien: ' + location.href;
-                
+                console.log('URL à envoyer' + location.href);
                 $('body').addClass('active');
             }
 
             if (room) {
                 setRoom(room);
             } else {
-                $('form').submit(function () {
-                    //récupération du nom de la room
-                    var val = $('#sessionInput').val().toLowerCase().replace(/\s/g, '-').replace(/[^A-Za-z0-9_\-]/g, '');
-                    webrtc.createRoom(val, function (err, name) {
-                        console.log(' create room cb', arguments);
-
-                        var newUrl = location.pathname + '?' + name;
-                        if (!err) {
-                            history.replaceState({foo: 'bar'}, null, newUrl);
-                            setRoom(name);
-                        } else {
-                            console.log(err);
-                        }
-                    });
-                    return false;
+                //permet de récupérer les valeurs de la room
+                //récupération du nom de la room
+                var val = $('#sessionVideo').attr('userIds');
+                //$('#sessionInput').val().toLowerCase().replace(/\s/g, '-').replace(/[^A-Za-z0-9_\-]/g, '');
+                webrtc.createRoom(val, function (err, name) {
+                    console.log(' create room cb', arguments);
+                    var newUrl = location.pathname + '?' + name;
+                    if (!err) {
+                        history.replaceState({foo: 'bar'}, null, newUrl);
+                        setRoom(name);
+                    } else {
+                        console.log(err);
+                    }
                 });
             }
-/* script pour le partage d'écran
-            var button = document.getElementById('screenShareButton'),
-                    setButton = function (bool) {
-                        button.innerText = bool ? 'partager mon écran' : 'arrêter le partage';
-                    };
-            if (!webrtc.capabilities.supportScreenSharing) {
-                button.disabled = 'disabled';
-            }
-            webrtc.on('localScreenRemoved', function () {
-                setButton(true);
+            $('#stopVideo').click(function () {
+                $('#sessionVideo').empty();
+                webrtc.close();
+                console.log('arreter');
             });
-
-            setButton(true);
-
-            button.onclick = function () {
-                if (webrtc.getLocalScreen()) {
-                    webrtc.stopScreenShare();
-                    setButton(true);
-                } else {
-                    webrtc.shareScreen(function (err) {
-                        if (err) {
-                            setButton(true);
-                        } else {
-                            setButton(false);
-                        }
-                    });
-
-                }
-            }; */
+            /* script pour le partage d'écran
+             var button = document.getElementById('screenShareButton'),
+             setButton = function (bool) {
+             button.innerText = bool ? 'partager mon écran' : 'arrêter le partage';
+             };
+             if (!webrtc.capabilities.supportScreenSharing) {
+             button.disabled = 'disabled';
+             }
+             webrtc.on('localScreenRemoved', function () {
+             setButton(true);
+             });
+             
+             setButton(true);
+             
+             button.onclick = function () {
+             if (webrtc.getLocalScreen()) {
+             webrtc.stopScreenShare();
+             setButton(true);
+             } else {
+             webrtc.shareScreen(function (err) {
+             if (err) {
+             setButton(true);
+             } else {
+             setButton(false);
+             }
+             });
+             
+             }
+             }; */
         </script>
     </body>
 </html>

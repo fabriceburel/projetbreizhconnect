@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Gestion des relations entre utilisateurs avec héritage de la class dataBase
+ */
 class relationship extends dataBase {
 
     public $id = 0;
@@ -18,7 +21,7 @@ class relationship extends dataBase {
      */
     public function addFriend()
     {
-        $query = 'INSERT INTO `' . self::PREFIX . 'relationship` (`idTransmitter`, `idReceiver`) VALUES (:idTransmitter, :idReceiver)';
+        $query = 'INSERT INTO ' . RELATIONSHIP . ' (`idTransmitter`, `idReceiver`) VALUES (:idTransmitter, :idReceiver)';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':idTransmitter', $this->idTransmitter, PDO::PARAM_INT);
         $responseRequest->bindValue(':idReceiver', $this->idReceiver, PDO::PARAM_INT);
@@ -27,20 +30,19 @@ class relationship extends dataBase {
     }
 
     /**
-     *  Etabli la relation en double sens entre emetteur et récepteur suite à la demande d'ajout d'ami
+     *  Etabli la relation en double sens entre emetteur et récepteur suite à la demande d'ajout d'ami à l'aide d'une transaction
      */
     public function acceptFriend()
     {
         try {
-            //On démarre la transaction, toujours mettre la table enfant avant la table parente pour éviter les soucis de suppression.
             $this->db->beginTransaction();
-            $queryAddFriend = 'INSERT INTO `' . self::PREFIX . 'relationship`(`idTransmitter`, `idReceiver`, `acceptRelation`) VALUES (:idTransmitter, :idReceiver, :acceptRelation)';
+            $queryAddFriend = 'INSERT INTO ' . RELATIONSHIP . '(`idTransmitter`, `idReceiver`, `acceptRelation`) VALUES (:idTransmitter, :idReceiver, :acceptRelation)';
             $responseRequestAddFriend = $this->db->prepare($queryAddFriend);
             $responseRequestAddFriend->bindValue(':idTransmitter', $this->idTransmitter, PDO::PARAM_INT);
             $responseRequestAddFriend->bindValue(':idReceiver', $this->idReceiver, PDO::PARAM_INT);
             $responseRequestAddFriend->bindValue(':acceptRelation', $this->acceptRelation, PDO::PARAM_BOOL);
             $responseRequestAddFriend->execute();
-            $queryUpdateFriend = 'UPDATE `' . self::PREFIX . 'relationship` SET `acceptRelation` = :acceptRelation WHERE `idTransmitter` = :idReceiver AND `idReceiver`= :idTransmitter';
+            $queryUpdateFriend = 'UPDATE ' . RELATIONSHIP . ' SET `acceptRelation` = :acceptRelation WHERE `idTransmitter` = :idReceiver AND `idReceiver`= :idTransmitter';
             $responseRequestUpdateFriend = $this->db->prepare($queryUpdateFriend);
             $responseRequestUpdateFriend->bindValue(':idTransmitter', $this->idTransmitter, PDO::PARAM_INT);
             $responseRequestUpdateFriend->bindValue(':idReceiver', $this->idReceiver, PDO::PARAM_INT);
@@ -60,9 +62,25 @@ class relationship extends dataBase {
     public function listFriendAskSend()
     {
         $resultRequest = array();
-        $query = 'SELECT `idReceiver` FROM `' . self::PREFIX . 'relationship` WHERE `idTransmitter` = :idTransmitter AND `acceptRelation` = 0 AND `block` = 1';
+        $query = 'SELECT `idReceiver` FROM ' . RELATIONSHIP . ' WHERE `idTransmitter` = :idTransmitter AND `acceptRelation` = 0 AND `block` = 1';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':idTransmitter', $this->idTransmitter, PDO::PARAM_INT);
+        if ($responseRequest->execute())
+        {
+            $resultRequest = $responseRequest->fetchAll(PDO::FETCH_COLUMN, 0);
+        }
+        return $resultRequest;
+    }
+
+    /**
+     * Permet de récupérer l'id dans un tableau la liste des personnes qui nous on envoyé une demande d'ami et qui attendent une réponse
+     */
+    public function listFriendWaitAdd()
+    {
+        $resultRequest = array();
+        $query = 'SELECT `idTransmitter` FROM ' . RELATIONSHIP . ' WHERE `idReceiver` = :idReceiver AND `acceptRelation` = 0 AND `block` = 1';
+        $responseRequest = $this->db->prepare($query);
+        $responseRequest->bindValue(':idReceiver', $this->idTransmitter, PDO::PARAM_INT);
         if ($responseRequest->execute())
         {
             $resultRequest = $responseRequest->fetchAll(PDO::FETCH_COLUMN, 0);
@@ -76,7 +94,7 @@ class relationship extends dataBase {
     public function listFriend()
     {
         $resultRequest = array();
-        $query = 'SELECT `idReceiver` FROM `' . self::PREFIX . 'relationship` WHERE `idTransmitter` = :idTransmitter AND `acceptRelation` = 1 AND `block` = 1';
+        $query = 'SELECT `idReceiver` FROM ' . RELATIONSHIP . ' WHERE `idTransmitter` = :idTransmitter AND `acceptRelation` = 1 AND `block` = 1';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':idTransmitter', $this->idTransmitter, PDO::PARAM_INT);
         if ($responseRequest->execute())
@@ -92,7 +110,7 @@ class relationship extends dataBase {
     public function listBlockFriend()
     {
         $resultRequest = array();
-        $query = 'SELECT `idTransmitter` FROM `' . self::PREFIX . 'relationship` WHERE `idReceiver` = :idReceiver AND `acceptRelation` = 1 AND `block` = 0';
+        $query = 'SELECT `idTransmitter` FROM ' . RELATIONSHIP . ' WHERE `idReceiver` = :idReceiver AND `acceptRelation` = 1 AND `block` = 0';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':idReceiver', $this->idTransmitter, PDO::PARAM_INT);
         if ($responseRequest->execute())
@@ -103,12 +121,12 @@ class relationship extends dataBase {
     }
 
     /**
-     * Permet de récupérer dans un tableau la liste des personnes qui on bloqué l'utilisateur
+     * Permet de récupérer dans un tableau la liste des personnes qu'on bloqué l'utilisateur
      */
     public function listFriendBlock()
     {
         $resultRequest = array();
-        $query = 'SELECT `idReceiver` FROM `' . self::PREFIX . 'relationship` WHERE `idTransmitter` = :idTransmitter AND `acceptRelation` = 1 AND `block` = 0';
+        $query = 'SELECT `idReceiver` FROM ' . RELATIONSHIP . ' WHERE `idTransmitter` = :idTransmitter AND `acceptRelation` = 1 AND `block` = 0';
         $responseRequest = $this->db->prepare($query);
         $responseRequest->bindValue(':idTransmitter', $this->idTransmitter, PDO::PARAM_INT);
         if ($responseRequest->execute())
@@ -119,11 +137,11 @@ class relationship extends dataBase {
     }
 
     /**
-     * La méthode blockFriend() permet de bloquer un utilisateur qui a demandé l'ajout en ami
+     * La méthode blockFriend() permet de bloquer un utilisateur qui a demandé l'ajout dans la communauté
      */
     public function blockFriend()
     {
-        $queryUpdateFriend = 'UPDATE `' . self::PREFIX . 'relationship` SET `acceptRelation` = 1, `block` = 0 WHERE `idTransmitter` = :idTransmitter AND `idReceiver`= :idReceiver';
+        $queryUpdateFriend = 'UPDATE ' . RELATIONSHIP . ' SET `acceptRelation` = 1, `block` = 0 WHERE `idTransmitter` = :idTransmitter AND `idReceiver`= :idReceiver';
         $responseRequestUpdateFriend = $this->db->prepare($queryUpdateFriend);
         $responseRequestUpdateFriend->bindValue(':idReceiver', $this->idTransmitter, PDO::PARAM_INT);
         $responseRequestUpdateFriend->bindValue(':idTransmitter', $this->idReceiver, PDO::PARAM_INT);
@@ -137,12 +155,12 @@ class relationship extends dataBase {
     {
         try {
             $this->db->beginTransaction();
-            $queryAddFriend = 'INSERT INTO `' . self::PREFIX . 'relationship`(`idTransmitter`, `idReceiver`, `acceptRelation`) VALUES (:idTransmitter, :idReceiver, 1)';
+            $queryAddFriend = 'INSERT INTO ' . RELATIONSHIP . '(`idTransmitter`, `idReceiver`, `acceptRelation`) VALUES (:idTransmitter, :idReceiver, 1)';
             $responseRequestAddFriend = $this->db->prepare($queryAddFriend);
             $responseRequestAddFriend->bindValue(':idTransmitter', $this->idTransmitter, PDO::PARAM_INT);
             $responseRequestAddFriend->bindValue(':idReceiver', $this->idReceiver, PDO::PARAM_INT);
             $responseRequestAddFriend->execute();
-            $queryUpdateFriend = 'UPDATE `' . self::PREFIX . 'relationship` SET `block` = 1 WHERE `idTransmitter` = :idTransmitter AND `idReceiver`= :idReceiver';
+            $queryUpdateFriend = 'UPDATE ' . RELATIONSHIP . ' SET `block` = 1 WHERE `idTransmitter` = :idTransmitter AND `idReceiver`= :idReceiver';
             $responseRequestUpdateFriend = $this->db->prepare($queryUpdateFriend);
             $responseRequestUpdateFriend->bindValue(':idReceiver', $this->idTransmitter, PDO::PARAM_INT);
             $responseRequestUpdateFriend->bindValue(':idTransmitter', $this->idReceiver, PDO::PARAM_INT);
@@ -155,13 +173,12 @@ class relationship extends dataBase {
         }
     }
 
-    /*
-     * Refuser une demande d'ajout en ami
+    /**
+     * Refuser une demande d'ajout dans la communauté
      */
-
     public function denyFriend()
     {
-        $queryUpdateFriend = 'DELETE FROM `' . self::PREFIX . 'relationship` WHERE `idTransmitter` = :idTransmitter AND `idReceiver`= :idReceiver';
+        $queryUpdateFriend = 'DELETE FROM ' . RELATIONSHIP . ' WHERE `idTransmitter` = :idTransmitter AND `idReceiver`= :idReceiver';
         $responseRequestUpdateFriend = $this->db->prepare($queryUpdateFriend);
         $responseRequestUpdateFriend->bindValue(':idReceiver', $this->idTransmitter, PDO::PARAM_INT);
         $responseRequestUpdateFriend->bindValue(':idTransmitter', $this->idReceiver, PDO::PARAM_INT);
@@ -169,11 +186,16 @@ class relationship extends dataBase {
     }
 
     /**
-     * Cette méthode permet par une transaction, dans un premier temps de récupérer l'id de la relation entre l'emetteur et le récepteur du message si ceux sont bien en relation
-     * De sauvegarder le message dans la bdd
-     * Et finalement récupérer les messages qui existe entre les 2 utilisateurs
+     * Supprimer une personne de la communauté
      */
- 
+    public function deleteFriend()
+    {
+        $queryUpdateFriend = 'DELETE FROM `pklds_relationship` WHERE (`pklds_relationship`.`idTransmitter` = :idTransmitter && `pklds_relationship`.`idReceiver` = :idReceiver) OR (`pklds_relationship`.`idTransmitter` = :idReceiver && `pklds_relationship`.`idReceiver` = :idTransmitter)';
+        $responseRequestUpdateFriend = $this->db->prepare($queryUpdateFriend);
+        $responseRequestUpdateFriend->bindValue(':idReceiver', $this->idTransmitter, PDO::PARAM_INT);
+        $responseRequestUpdateFriend->bindValue(':idTransmitter', $this->idReceiver, PDO::PARAM_INT);
+        return $responseRequestUpdateFriend->execute();
+    }
 
     public function __destruct()
     {

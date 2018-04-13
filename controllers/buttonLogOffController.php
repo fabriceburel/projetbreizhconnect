@@ -1,7 +1,9 @@
 <?php
 $users = new users();
+$log = new log();
 $textError = '';
 $checklogin = false;
+$log->lastAction = date('Y-m-d H:i:s');
 //vérification de la connexion
 if (isset($_POST['username']) && isset($_POST['password']))
 {
@@ -14,10 +16,10 @@ if (isset($_POST['username']) && isset($_POST['password']))
         if ($users->username != NULL && password_verify($_POST['password'], $user->password))
         {
             $_SESSION['username'] = $users->username;
-            $_SESSION['id'] = $user->id;
-            $users->id = $user->id;
-            $users->log = 1;
-            if ($users->updateLog())
+            $_SESSION['id'] = intval($user->id);
+            $log->idUser = intval($user->id);
+            $log->connect = 1;
+            if ($log->updateLog())
             {
                 $checklogin = true;
                 header('Location:index.php');
